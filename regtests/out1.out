@@ -1,0 +1,7 @@
+error1.txt:4: line too long
+error1.txt:7: line too long
+error1.txt:7: no trailing spaces allowed
+error1.txt:9: duplicate blank line
+demo.adb:3: 2 spaces after --
+demo.adb:5: 2 spaces after --
+demo.adb:7:09: extra ";" ignored

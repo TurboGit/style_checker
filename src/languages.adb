@@ -1,0 +1,417 @@
+------------------------------------------------------------------------------
+--                              Style Checker                               --
+--                                                                          --
+--                    Copyright (C) 2006, Pascal Obry                       --
+--                                                                          --
+--  This library is free software; you can redistribute it and/or modify    --
+--  it under the terms of the GNU General Public License as published by    --
+--  the Free Software Foundation; either version 2 of the License, or (at   --
+--  your option) any later version.                                         --
+--                                                                          --
+--  This library is distributed in the hope that it will be useful, but     --
+--  WITHOUT ANY WARRANTY; without even the implied warranty of              --
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       --
+--  General Public License for more details.                                --
+--                                                                          --
+--  You should have received a copy of the GNU General Public License       --
+--  along with this library; if not, write to the Free Software Foundation, --
+--  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          --
+--                                                                          --
+------------------------------------------------------------------------------
+
+with Ada.Characters.Handling;
+with Ada.Directories;
+with Ada.Strings.Unbounded;
+with Ada.Text_IO;
+
+package body Languages is
+
+   use Ada;
+   use Ada.Strings.Unbounded;
+   use Ada.Characters.Handling;
+
+   Lang_Set : array (1 .. 50) of Lang_Access;
+   Index    : Natural := 0;
+
+   function Get_From_Name (Name : in String) return Lang'Class;
+   --  Return a language given its name
+
+   ---------------------------------
+   -- Add_Style_Checker_Parameter --
+   ---------------------------------
+
+   procedure Add_Style_Checker_Parameter
+     (L         : in Lang_Access;
+      Parameter : in String) is
+   begin
+      if L = null then
+         raise Checks.Syntax_Error;
+
+      else
+         L.C.Index := L.C.Index + 1;
+
+         if L.C.Index > L.C.Checker_Params'Last then
+            raise Checks.Syntax_Error;
+         else
+            L.C.Checker_Params (L.C.Index) := new String'(Parameter);
+         end if;
+      end if;
+   end Add_Style_Checker_Parameter;
+
+   -------------
+   -- Comment --
+   -------------
+
+   function Comment (L : in Lang) return String is
+   begin
+      return "";
+   end Comment;
+
+   ----------------------
+   -- Run_Syntax_Check --
+   ----------------------
+
+   function Run_Syntax_Check
+     (L : in Lang; Filename : in String) return Boolean is
+   begin
+      return True;
+   end Run_Syntax_Check;
+
+   ---------
+   -- Get --
+   ---------
+
+   function Get (Filename : in String) return Lang'Class is
+      Ext : constant String := Directories.Extension (Filename);
+   begin
+      for K in 1 .. Index loop
+         if Is_Extension (Lang_Set (K).all, Ext) then
+            return Lang_Set (K).all;
+         end if;
+      end loop;
+
+      return Get_From_Name ("unknown");
+   end Get;
+
+   -------------------
+   -- Get_From_Name --
+   -------------------
+
+   function Get_From_Name (Name : in String) return Lang_Access is
+      L_Name : constant String := To_Lower (Name);
+   begin
+      for K in 1 .. Index loop
+         if To_Lower (To_String (Lang_Set (K).Name)) = L_Name then
+            return Lang_Set (K);
+         end if;
+      end loop;
+
+      return Get_From_Name ("unknown");
+   end Get_From_Name;
+
+   function Get_From_Name (Name : in String) return Lang'Class is
+   begin
+      return Get_From_Name (Name).all;
+   end Get_From_Name;
+
+   ------------------
+   -- Is_Extension --
+   ------------------
+
+   function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+   begin
+      return False;
+   end Is_Extension;
+
+   ----------
+   -- List --
+   ----------
+
+   procedure List is
+   begin
+      for K in 1 .. Index loop
+         declare
+            L_Name : constant String := Name (Lang_Set (K).all);
+         begin
+            if L_Name /= "unknown" then
+               Text_IO.Put_Line ("   " & L_Name);
+            end if;
+         end;
+      end loop;
+   end List;
+
+   ----------
+   -- Name --
+   ----------
+
+   function Name (L : in Lang) return String is
+   begin
+      return To_String (L.Name);
+   end Name;
+
+   --------------
+   -- Register --
+   --------------
+
+   procedure Register (L : in Lang'Class; Name : in String) is
+   begin
+      Index := Index + 1;
+      Lang_Set (Index) :=  new Lang'Class'(L);
+      Lang_Set (Index).Name := To_Unbounded_String (Name);
+   end Register;
+
+   ------------------------------
+   -- Set_Duplicate_Blank_Line --
+   ------------------------------
+
+   procedure Set_Duplicate_Blank_Line
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Duplicate_Blank_Line (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Duplicate_Blank_Line := Mode;
+      end if;
+   end Set_Duplicate_Blank_Line;
+
+   ---------------------
+   -- Set_Line_Ending --
+   ---------------------
+
+   procedure Set_Line_Ending
+     (L      : in Lang_Access;
+      Ending : in Checks.Line_Ending_Style) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Line_Ending (Lang_Set (K), Ending);
+         end loop;
+
+      else
+         L.C.Line_Ending := Ending;
+      end if;
+   end Set_Line_Ending;
+
+   -------------------------
+   -- Set_Line_Length_Max --
+   -------------------------
+
+   procedure Set_Line_Length_Max
+     (L      : in Lang_Access;
+      Length : in Positive) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Line_Length_Max (Lang_Set (K), Length);
+         end loop;
+
+      else
+         L.C.Line_Length_Max := Length;
+      end if;
+   end Set_Line_Length_Max;
+
+   -----------------------
+   -- Set_Space_Comment --
+   -----------------------
+
+   procedure Set_Space_Comment
+     (L      : in Lang_Access;
+      Number : in Natural) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Space_Comment (Lang_Set (K), Number);
+         end loop;
+
+      else
+         L.C.Space_Comment := Number;
+      end if;
+   end Set_Space_Comment;
+
+   ---------------------
+   -- Set_Header_Size --
+   ---------------------
+
+   procedure Set_Header_Size
+     (L    : in Lang_Access;
+      Size : in Natural) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Header_Size (Lang_Set (K), Size);
+         end loop;
+
+      else
+         L.C.Header_Size := Size;
+      end if;
+   end Set_Header_Size;
+
+   ---------------------------
+   -- Set_Copyright_Present --
+   ---------------------------
+
+   procedure Set_Copyright_Present
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Copyright_Present (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Copyright_Present := Mode;
+      end if;
+   end Set_Copyright_Present;
+
+   ------------------------
+   -- Set_Copyright_Year --
+   ------------------------
+
+   procedure Set_Copyright_Year
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Copyright_Year (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Copyright_Year := Mode;
+      end if;
+   end Set_Copyright_Year;
+
+   ----------------------
+   -- Set_Syntax_Check --
+   ----------------------
+
+   procedure Set_Syntax_Check
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Syntax_Check (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Check_Syntax := Mode;
+      end if;
+   end Set_Syntax_Check;
+
+   -------------------------
+   -- Set_Trailing_Spaces --
+   -------------------------
+
+   procedure Set_Trailing_Spaces
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Trailing_Spaces (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Trailing_Spaces := Mode;
+      end if;
+   end Set_Trailing_Spaces;
+
+   ---------------------------
+   -- Get_Copyright_Present --
+   ---------------------------
+
+   function Get_Copyright_Present (L : in Lang) return Boolean is
+   begin
+      return L.C.Copyright_Present;
+   end Get_Copyright_Present;
+
+   ------------------------
+   -- Get_Copyright_Year --
+   ------------------------
+
+   function Get_Copyright_Year (L : in Lang) return Boolean is
+   begin
+      return L.C.Copyright_Year;
+   end Get_Copyright_Year;
+
+   ------------------------------
+   -- Get_Duplicate_Blank_Line --
+   ------------------------------
+
+   function Get_Duplicate_Blank_Line (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Duplicate_Blank_Line;
+   end Get_Duplicate_Blank_Line;
+
+   ---------------------
+   -- Get_Header_Size --
+   ---------------------
+
+   function Get_Header_Size (L : in Lang) return Natural is
+   begin
+      return  L.C.Header_Size;
+   end Get_Header_Size;
+
+   ---------------------
+   -- Get_Line_Ending --
+   ---------------------
+
+   function Get_Line_Ending
+     (L : in Lang) return Checks.Line_Ending_Style is
+   begin
+      return L.C.Line_Ending;
+   end Get_Line_Ending;
+
+   -------------------------
+   -- Get_Line_Length_Max --
+   -------------------------
+
+   function Get_Line_Length_Max (L : in Lang) return Positive is
+   begin
+      return L.C.Line_Length_Max;
+   end Get_Line_Length_Max;
+
+   -----------------------
+   -- Get_Space_Comment --
+   -----------------------
+
+   function Get_Space_Comment (L : in Lang) return Natural is
+   begin
+      return L.C.Space_Comment;
+   end Get_Space_Comment;
+
+   ----------------------
+   -- Get_Syntax_Check --
+   ----------------------
+
+   function Get_Syntax_Check (L : in Lang) return Boolean is
+   begin
+      return L.C.Check_Syntax;
+   end Get_Syntax_Check;
+
+   -------------------------
+   -- Get_Trailing_Spaces --
+   -------------------------
+
+   function Get_Trailing_Spaces (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Trailing_Spaces;
+   end Get_Trailing_Spaces;
+
+   ----------------------------------
+   -- Get_Style_Checker_Parameters --
+   ----------------------------------
+
+   function Get_Style_Checker_Parameters
+     (L : in Lang) return GNAT.OS_Lib.Argument_List is
+   begin
+      return L.C.Checker_Params (1 .. L.C.Index);
+   end Get_Style_Checker_Parameters;
+
+end Languages;

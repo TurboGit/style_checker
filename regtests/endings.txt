@@ -1,0 +1,4 @@
+First line
+A line with DOS ending
+Another one.
+
