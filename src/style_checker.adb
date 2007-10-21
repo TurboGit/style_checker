@@ -45,6 +45,7 @@ with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
+with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with GNAT.Command_Line;
@@ -58,6 +59,7 @@ procedure Style_Checker is
 
    use Ada;
    use Ada.Strings;
+   use Ada.Strings.Unbounded;
    use GNAT;
    use type Directories.File_Kind;
    use type Checks.Line_Ending_Style;
@@ -66,7 +68,7 @@ procedure Style_Checker is
    package Ext_Set is new Containers.Indefinite_Hashed_Sets
      (String, Hash, "=", "=");
 
-   Version : constant String := "1.5";
+   Version : constant String := "1.6";
 
    Y : constant String :=
          Calendar.Year_Number'Image (Calendar.Year (Calendar.Clock));
@@ -77,6 +79,7 @@ procedure Style_Checker is
    Ignore_Set        : Ext_Set.Set;
    Max_Error         : Natural := Natural'Last;
    Error_Count       : Natural := 0;
+   Real_Filename     : Unbounded_String;
 
    type File_Checker is record
       File            : File_Reader.File_Type;
@@ -168,6 +171,13 @@ procedure Style_Checker is
       then
          Report_Error
            (Filename, "missing year " & Current_Year & " in copyright");
+      end if;
+
+      if Checker.Lang.Get_Duplicate_Blank_Line = Checks.Rejected
+        and then Checker.Count_Blank >= 1
+      then
+         Report_Error
+           (Filename, "blank line not allowed at end of file");
       end if;
 
    exception
@@ -382,10 +392,17 @@ procedure Style_Checker is
    begin
       Error_Count := Error_Count + 1;
       if Error_Count <= Max_Error then
-         Text_IO.Put_Line
-           (Text_IO.Standard_Error,
-            File_Reader.Name (File, Absolute_Pathname) & ':'
-            & Line (Line'First + 1 .. Line'Last) & ": " & Message);
+         if Real_Filename = Null_Unbounded_String then
+            Text_IO.Put_Line
+              (Text_IO.Standard_Error,
+               File_Reader.Name (File, Absolute_Pathname) & ':'
+                 & Line (Line'First + 1 .. Line'Last) & ": " & Message);
+         else
+            Text_IO.Put_Line
+              (Text_IO.Standard_Error,
+               To_String (Real_Filename) & ':'
+                 & Line (Line'First + 1 .. Line'Last) & ": " & Message);
+         end if;
       end if;
    end Report_Error;
 
@@ -395,8 +412,14 @@ procedure Style_Checker is
    begin
       Error_Count := Error_Count + 1;
       if Error_Count <= Max_Error then
-         Text_IO.Put_Line
-           (Text_IO.Standard_Error, Filename & ":1: " & Message);
+         if Real_Filename = Null_Unbounded_String then
+            Text_IO.Put_Line
+              (Text_IO.Standard_Error, Filename & ":1: " & Message);
+         else
+            Text_IO.Put_Line
+              (Text_IO.Standard_Error,
+               To_String (Real_Filename) & ":1: " & Message);
+         end if;
       end if;
    end Report_Error;
 
@@ -429,6 +452,7 @@ procedure Style_Checker is
       P ("   -l N        : line length <= N (default 79)");
       P ("   -L          : disable line length check");
       P ("   -m N        : output only the first N errors");
+      P ("   -n NAME     : filename to report in error message");
       P ("   -s          : syntax check (default)");
       P ("   -sp PARAM   : additional parameter for the style checker");
       P ("   -S          : disable syntax check");
@@ -452,7 +476,7 @@ begin
       loop
          case GNAT.Command_Line.Getopt
            ("abs lang: ign: e: E l? h? H "
-              & "L b B s S t T c? C cp cy cP cY sp: m:")
+              & "L b B s S t T c? C cp cy cP cY sp: m: n:")
          is
             when ASCII.NUL =>
                exit;
@@ -591,6 +615,10 @@ begin
 
             when 'm' =>
                Max_Error := Natural'Value (GNAT.Command_Line.Parameter);
+
+            when 'n' =>
+               Real_Filename :=
+                 To_Unbounded_String (GNAT.Command_Line.Parameter);
 
             when others =>
                raise Checks.Syntax_Error;
