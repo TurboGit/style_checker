@@ -1,5 +1,6 @@
 
 all:
+	mkdir -p obj
 	gnatmake -Pstyle_checker
 
 clean:
