@@ -2,3 +2,4 @@ obj
 style_checker
 *~
 #*
+src/version.ads
