@@ -62,6 +62,7 @@ procedure Style_Checker is
    use Ada.Strings;
    use Ada.Strings.Unbounded;
    use GNAT;
+
    use type Directories.File_Kind;
    use type Checks.Line_Ending_Style;
    use type Checks.Mode;
@@ -457,6 +458,7 @@ procedure Style_Checker is
       P ("   -S          : disable syntax check");
       P ("   -t          : check for trailing spaces (default)");
       P ("   -T          : disable trailing spaces check");
+      P ("   -v          : display version");
       Text_IO.New_Line;
    end Usage;
 
@@ -475,7 +477,7 @@ begin
       loop
          case GNAT.Command_Line.Getopt
            ("abs lang: ign: e: E l? h? H "
-              & "L b B s S t T c? C cp cy cP cY sp: m: n:")
+              & "L b B s S t T v c? C cp cy cP cY sp: m: n:")
          is
             when ASCII.NUL =>
                exit;
@@ -618,6 +620,10 @@ begin
             when 'n' =>
                Real_Filename :=
                  To_Unbounded_String (GNAT.Command_Line.Parameter);
+
+            when 'v' =>
+               Text_IO.Put_Line ("Style Checker " & Version.Complete);
+               exit;
 
             when others =>
                raise Checks.Syntax_Error;
