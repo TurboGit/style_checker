@@ -50,6 +50,7 @@ with Ada.Text_IO;
 
 with GNAT.Command_Line;
 
+with Version;
 with Checks;
 with File_Reader;
 with Languages;
@@ -67,8 +68,6 @@ procedure Style_Checker is
 
    package Ext_Set is new Containers.Indefinite_Hashed_Sets
      (String, Hash, "=", "=");
-
-   Version : constant String := "1.6";
 
    Y : constant String :=
          Calendar.Year_Number'Image (Calendar.Year (Calendar.Clock));
@@ -374,7 +373,7 @@ procedure Style_Checker is
       procedure P (Str : in String) renames Text_IO.Put_Line;
    begin
       Text_IO.New_Line;
-      P ("Style Checker v" & Version);
+      P ("Style Checker " & Version.Simple);
       Text_IO.New_Line;
       Languages.List;
       Text_IO.New_Line;
@@ -431,7 +430,7 @@ procedure Style_Checker is
       procedure P (Str : in String) renames Text_IO.Put_Line;
    begin
       Text_IO.New_Line;
-      P ("Style Checker v" & Version);
+      P ("Style Checker " & Version.Simple);
       Text_IO.New_Line;
       P ("style_checker [-lang name] [options] file1 file2...");
       P ("   -lang NAME  : following options are for this specific language");
