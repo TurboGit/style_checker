@@ -1,1 +1,2 @@
 endings.txt:2: wrong DOS line ending
+endings.txt:4: blank line not allowed at end of file
