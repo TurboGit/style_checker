@@ -193,7 +193,7 @@ package body File_Reader is
    ---------------
 
    function Read_Char (File : in File_Type) return Character is
-      C : Character := Peek_Char (File);
+      C : constant Character := Peek_Char (File);
    begin
       File.Self.Index := File.Index + 1;
       return  C;
