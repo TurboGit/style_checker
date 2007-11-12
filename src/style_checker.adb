@@ -107,7 +107,8 @@ procedure Style_Checker is
 
    procedure Report_Error
      (Filename : in String;
-      Message  : in String);
+      Message  : in String;
+      At_Line  : in Natural := 1);
    --  Report an error to standard error
 
    procedure Usage;
@@ -124,6 +125,7 @@ procedure Style_Checker is
       Checker : File_Checker;
       Line    : String (1 .. 2_048);
       K       : Natural;
+      Nb_Line : Natural := 0;
       Ending  : Checks.Line_Ending_Style;
    begin
       Checker.Lang := new Languages.Lang'Class'(Languages.Get (Filename));
@@ -136,6 +138,8 @@ procedure Style_Checker is
          File_Reader.Get_Line (Checker.File, Line, K, Ending);
          Check_Line (Checker, Line (1 .. K), Ending);
       end loop;
+
+      Nb_Line := File_Reader.Line (Checker.File);
 
       File_Reader.Close (Checker.File);
 
@@ -177,7 +181,9 @@ procedure Style_Checker is
         and then Checker.Count_Blank >= 1
       then
          Report_Error
-           (Filename, "blank line not allowed at end of file");
+           (Filename => Filename,
+            Message => "blank line not allowed at end of file",
+            At_Line => Nb_Line);
       end if;
 
    exception
@@ -408,17 +414,22 @@ procedure Style_Checker is
 
    procedure Report_Error
      (Filename : in String;
-      Message  : in String) is
+      Message  : in String;
+      At_Line  : in Natural := 1)
+   is
+      Line : constant String := Natural'Image (At_Line);
    begin
       Error_Count := Error_Count + 1;
       if Error_Count <= Max_Error then
          if Real_Filename = Null_Unbounded_String then
             Text_IO.Put_Line
-              (Text_IO.Standard_Error, Filename & ":1: " & Message);
+              (Text_IO.Standard_Error, Filename & ':'
+               & Line (Line'First + 1 .. Line'Last) & ": " & Message);
          else
             Text_IO.Put_Line
               (Text_IO.Standard_Error,
-               To_String (Real_Filename) & ":1: " & Message);
+               To_String (Real_Filename) & ':'
+               & Line (Line'First + 1 .. Line'Last) & ": " & Message);
          end if;
       end if;
    end Report_Error;
