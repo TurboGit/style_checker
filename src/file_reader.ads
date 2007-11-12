@@ -19,6 +19,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Strings.Unbounded;
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
 
@@ -27,6 +28,7 @@ with Checks;
 package File_Reader is
 
    use Ada.Streams;
+   use Ada.Strings.Unbounded;
 
    type File_Type is limited private;
 
@@ -61,12 +63,13 @@ private
    type File_Type_Access is access all File_Type;
 
    type File_Type is limited record
-      Self  : File_Type_Access := File_Type'Unchecked_Access;
-      File  : Stream_IO.File_Type;
-      Line  : Natural := 0;
-      Cache : String (1 .. Cache_Size);
-      Size  : Natural := 0;
-      Index : Natural := 0;
+      Self          : File_Type_Access := File_Type'Unchecked_Access;
+      Relative_Name : Unbounded_String;
+      File          : Stream_IO.File_Type;
+      Line          : Natural := 0;
+      Cache         : String (1 .. Cache_Size);
+      Size          : Natural := 0;
+      Index         : Natural := 0;
    end record;
 
 end File_Reader;

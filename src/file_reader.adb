@@ -125,7 +125,7 @@ package body File_Reader is
       if Absolute then
          return Directories.Full_Name (Stream_IO.Name (File.File));
       else
-         return Directories.Simple_Name (Stream_IO.Name (File.File));
+         return To_String (File.Relative_Name);
       end if;
    end Name;
 
@@ -136,6 +136,7 @@ package body File_Reader is
    procedure Open (File : in out File_Type; Name : in String) is
    begin
       Stream_IO.Open (File.File, Stream_IO.In_File, Name);
+      File.Relative_Name := To_Unbounded_String (Name);
    end Open;
 
    ---------------
