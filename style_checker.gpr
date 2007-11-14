@@ -10,6 +10,10 @@ project Style_Checker is
       for Vcs_Kind use "Subversion";
    end Ide;
 
+   package Binder is
+      for Default_Switches ("Ada") use ("-static");
+   end Binder;
+
    package Compiler is
       for Default_Switches ("ada") use ("-gnat05", "-gnaty", "-O2");
    end Compiler;
