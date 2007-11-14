@@ -3,3 +3,4 @@ style_checker
 *~
 #*
 src/version.ads
+*.exe
