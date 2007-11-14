@@ -1,7 +1,8 @@
+
 VERSION     = $(shell git describe --abbrev=0 2>/dev/null)
 VERSION_ALL = $(shell git describe 2>/dev/null)
 
-all:
+all: setup
 	mkdir -p obj
 	gnatmake -Pstyle_checker
 
