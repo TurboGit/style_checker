@@ -7,7 +7,7 @@ project Style_Checker is
    for Main use ("style_checker.adb");
 
    package Ide is
-      for Vcs_Kind use "Subversion";
+      for Vcs_Kind use "Git";
    end Ide;
 
    package Binder is
