@@ -1,6 +1,7 @@
-obj
-style_checker
-*~
 #*
-src/version.ads
 *.exe
+*~
+obj
+regtests/*.res
+src/version.ads
+style_checker
