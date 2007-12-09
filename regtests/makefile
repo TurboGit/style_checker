@@ -17,6 +17,9 @@ run_tests:
 	-../style_checker -ign e hello.e >> out10.res 2>&1
 	-../style_checker -m 2 hello.e > out11.res 2>&1
 	-../style_checker header1.adb header2.adb header3.adb > out12.res 2>&1
+	-../style_checker -S -cY -H \
+		-cf'Copyright \(C\) 2\d\d\d-2\d\d\d, (Pascal Obry|Qwerty)' \
+		copyright.ads > out13.res 2>&1
 
 check_results:
 	echo "### regressions follows"
@@ -32,6 +35,7 @@ check_results:
 	-diff -wc out10.out out10.res
 	-diff -wc out11.out out11.res
 	-diff -wc out12.out out12.res
+	-diff -wc out13.out out13.res
 
 clean:
 	rm -f *.res *~

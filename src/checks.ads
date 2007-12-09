@@ -19,9 +19,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Strings.Unbounded;
 with GNAT.OS_Lib;
 
 package Checks is
+
+   use Ada.Strings.Unbounded;
 
    Syntax_Error : exception;
    --  Raised when a syntax error is found
@@ -56,6 +59,9 @@ package Checks is
 
       Copyright_Year       : Boolean := True;
       --  Copyright year must include current year
+
+      Copyright_Pattern    : Unbounded_String;
+      --  Copyright line must match the given regexp pattern
 
       Check_Syntax         : Boolean := True;
       --  Syntax must be checked

@@ -93,6 +93,15 @@ package body Languages is
       return Get_From_Name ("unknown");
    end Get;
 
+   ---------------------------
+   -- Get_Copyright_Pattern --
+   ---------------------------
+
+   function Get_Copyright_Pattern (L : in Lang) return String is
+   begin
+      return To_String (L.C.Copyright_Pattern);
+   end Get_Copyright_Pattern;
+
    -------------------
    -- Get_From_Name --
    -------------------
@@ -159,6 +168,24 @@ package body Languages is
       Lang_Set (Index) :=  new Lang'Class'(L);
       Lang_Set (Index).Name := To_Unbounded_String (Name);
    end Register;
+
+   ---------------------------
+   -- Set_Copyright_Pattern --
+   ---------------------------
+
+   procedure Set_Copyright_Pattern
+     (L       : in Lang_Access;
+      Pattern : in String) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Copyright_Pattern (Lang_Set (K), Pattern);
+         end loop;
+
+      else
+         L.C.Copyright_Pattern := To_Unbounded_String (Pattern);
+      end if;
+   end Set_Copyright_Pattern;
 
    ------------------------------
    -- Set_Duplicate_Blank_Line --

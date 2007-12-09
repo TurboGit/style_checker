@@ -121,6 +121,14 @@ package Languages is
 
    function Get_Copyright_Year (L : in Lang) return Boolean;
 
+   --  Copyright pattern
+
+   procedure Set_Copyright_Pattern
+     (L       : in Lang_Access;
+      Pattern : in String);
+
+   function Get_Copyright_Pattern (L : in Lang) return String;
+
    --  Comments
 
    procedure Set_Space_Comment

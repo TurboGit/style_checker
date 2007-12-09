@@ -49,6 +49,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with GNAT.Command_Line;
+with GNAT.Regpat;
 
 with Version;
 with Checks;
@@ -116,6 +117,9 @@ procedure Style_Checker is
 
    procedure List_Languages;
    --  Display supported languages
+
+   function Unquote (Str : in String) return String;
+   --  Removes leading/trailing spaces and quote if present
 
    -----------
    -- Check --
@@ -231,7 +235,7 @@ procedure Style_Checker is
            and then Cp_Start + 10 <= Line'Length
            and then Line (Cp_Start + 10) /= ' '
          then
-            --  we are not at the end of the line and not space after Copyright
+            --  We are not at the end of the line and no space after Copyright
             Cp_Start := 0;
          end if;
 
@@ -248,6 +252,23 @@ procedure Style_Checker is
                   Checker.Copyright_Year := True;
                end if;
             end if;
+         end if;
+
+         --  Check that the copyright year follow the given regexp
+
+         if Cp_Start /= 0
+           and then Checker.Lang.Get_Copyright_Pattern /= ""
+         then
+            declare
+               Pattern : constant Regpat.Pattern_Matcher :=
+                           Regpat.Compile (Checker.Lang.Get_Copyright_Pattern);
+            begin
+               if not Regpat.Match (Pattern, Line) then
+                  Report_Error
+                    (Checker.File,
+                     "copyright line not matching expected pattern");
+               end if;
+            end;
          end if;
       end Check_Copyright;
 
@@ -434,6 +455,22 @@ procedure Style_Checker is
       end if;
    end Report_Error;
 
+   -------------
+   -- Unquote --
+   -------------
+
+   function Unquote (Str : in String) return String is
+      S : String := Fixed.Trim (Str, Strings.Both);
+   begin
+      if (S (S'First) = ''' and then S (S'Last) = ''')
+        or else (S (S'First) = '"' and then S (S'Last) = '"')
+      then
+         return S (S'First + 1 .. S'Last - 1);
+      else
+         return S;
+      end if;
+   end Unquote;
+
    -----------
    -- Usage --
    -----------
@@ -456,6 +493,9 @@ procedure Style_Checker is
       P ("   -cP         : disable check for copyright presence (default)");
       P ("   -cy         : check for copyright year");
       P ("   -cY         : disbale check for copyright year (default)");
+      P ("   -cf         : if present a copyright line should match the"
+         & "given pattern");
+      P ("   -cF         : disable copyright pattern check");
       P ("   -e DOS|UNIX : line ending style (UNIX default)");
       P ("   -E          : disable line ending check");
       P ("   -h N        : start with an header of N line (default N  20)");
@@ -488,7 +528,7 @@ begin
       loop
          case GNAT.Command_Line.Getopt
            ("abs lang: ign: e: E l? h? H "
-              & "L b B s S t T v c? C cp cy cP cY sp: m: n:")
+              & "L b B s S t T v c? C cp cy cP cY cf: cF sp: m: n:")
          is
             when ASCII.NUL =>
                exit;
@@ -619,6 +659,13 @@ begin
 
                   elsif Full = "cY" then
                      Languages.Set_Copyright_Year (Lang, False);
+
+                  elsif Full = "cf" then
+                     Languages.Set_Copyright_Pattern
+                       (Lang, Unquote (GNAT.Command_Line.Parameter));
+
+                  elsif Full = "cF" then
+                     Languages.Set_Copyright_Pattern (Lang, "");
                   end if;
                end;
 
