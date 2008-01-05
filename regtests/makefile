@@ -23,19 +23,21 @@ run_tests:
 
 check_results:
 	echo "### regressions follows"
-	-diff -wc out1.out out1.res
-	-diff -wc out2.out out2.res
-	-diff -wc out3.out out3.res
-	-diff -wc out4.out out4.res
-	-diff -wc out5.out out5.res
-	-diff -wc out5.out out6.res
-	-diff -wc out5.out out7.res
-	-diff -wc out8.out out8.res
-	-diff -wc out9.out out9.res
-	-diff -wc out10.out out10.res
-	-diff -wc out11.out out11.res
-	-diff -wc out12.out out12.res
-	-diff -wc out13.out out13.res
+	rm -f out_status.res
+	-diff -wc out1.out out1.res || echo $$? >> out_status.res
+	-diff -wc out2.out out2.res || echo $$? >> out_status.res
+	-diff -wc out3.out out3.res || echo $$? >> out_status.res
+	-diff -wc out4.out out4.res || echo $$? >> out_status.res
+	-diff -wc out5.out out5.res || echo $$? >> out_status.res
+	-diff -wc out5.out out6.res || echo $$? >> out_status.res
+	-diff -wc out5.out out7.res || echo $$? >> out_status.res
+	-diff -wc out8.out out8.res || echo $$? >> out_status.res
+	-diff -wc out9.out out9.res || echo $$? >> out_status.res
+	-diff -wc out10.out out10.res || echo $$? >> out_status.res
+	-diff -wc out11.out out11.res || echo $$? >> out_status.res
+	-diff -wc out12.out out12.res || echo $$? >> out_status.res
+	-diff -wc out13.out out13.res || echo $$? >> out_status.res
+	test ! -e out_status.res
 
 clean:
 	rm -f *.res *~
