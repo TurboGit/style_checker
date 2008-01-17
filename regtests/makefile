@@ -20,6 +20,7 @@ run_tests:
 	-../style_checker -S -cY -H \
 		-cf'Copyright \(C\) 2\d\d\d-2\d\d\d, (Pascal Obry|Qwerty)' \
 		copyright.ads > out13.res 2>&1
+	-../style_checker -H script.sh > out14.res 2>&1
 
 check_results:
 	echo "### regressions follows"
@@ -37,6 +38,7 @@ check_results:
 	-diff -wc out11.out out11.res || echo $$? >> out_status.res
 	-diff -wc out12.out out12.res || echo $$? >> out_status.res
 	-diff -wc out13.out out13.res || echo $$? >> out_status.res
+	-diff -wc out14.out out14.res || echo $$? >> out_status.res
 	test ! -e out_status.res
 
 clean:

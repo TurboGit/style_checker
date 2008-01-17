@@ -356,6 +356,9 @@ procedure Style_Checker is
            and then I + C'Length - 1 <= Line'Last
            and then Line (I .. I + C'Length - 1) = C
            and then Line (Line'Last - C'Length + 1 .. Line'Last) /= C
+           and then (Line (I .. I + 1) /= "#!"
+                     or else File_Reader.Line (Checker.File) > 1)
+         --  Do no check script headers
          then
             for K in I + C'Length .. I + C'Length + N - 1 loop
                if Line (K) /= ' ' then
