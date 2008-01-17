@@ -22,7 +22,7 @@
 with Ada.Strings.Unbounded;
 with GNAT.OS_Lib;
 
-package Checks is
+package Pck is
 
    use Ada.Strings.Unbounded;
 
@@ -40,7 +40,7 @@ package Checks is
 
    type Data is record
       Line_Ending          : Line_Ending_Style := UNIX;
-      --  The line ending style accepted
+      --  The line ending style accepted.
 
       Line_Length_Max      : Positive := 79;
       --  The maximum line length
@@ -64,18 +64,19 @@ package Checks is
       --  Copyright line must match the given regexp pattern
 
       Check_Syntax         : Boolean := True;
-      --  Syntax must be checked
+      --  Syntax must be checked.  
 
       Space_Comment        : Natural := 2;
-      --  Number of spaces after a comment tag
+      --  Number of spaces after a comment tag.
+      --  Test me.
 
       Checker_Params       : GNAT.OS_Lib.Argument_List (1 .. Max_Parameters);
       --  Style checker parameters
 
       Comment_Dot_EOL      : Boolean := True;
-      --  Single line comment can terminate with a dot
+      --  Single line comment can terminate with a dot.
 
       Index                : Natural := 0;
    end record;
 
-end Checks;
+end Pck;

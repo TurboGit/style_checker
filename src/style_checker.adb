@@ -83,13 +83,15 @@ procedure Style_Checker is
    Real_Filename     : Unbounded_String;
 
    type File_Checker is record
-      File            : File_Reader.File_Type;
-      Lang            : Languages.Lang_Access;
-      Count_Blank     : Natural := 0;
-      Copyright_Found : Boolean := False;
-      Copyright_Year  : Boolean := False;
-      Header_Size     : Natural := 0;
-      In_Header       : Boolean := True;
+      File                 : File_Reader.File_Type;
+      Lang                 : Languages.Lang_Access;
+      Count_Blank          : Natural := 0;
+      Copyright_Found      : Boolean := False;
+      Copyright_Year       : Boolean := False;
+      Header_Size          : Natural := 0;
+      In_Header            : Boolean := True;
+      Consecutive_Comment  : Natural := 0;
+      Last_Comment_Dot_EOL : Boolean := False;
    end record;
 
    procedure Check (Filename : in String);
@@ -101,9 +103,12 @@ procedure Style_Checker is
       Line_Ending : in     Checks.Line_Ending_Style);
    --  Pass all checks that are line related
 
+   subtype Line_Offset is Integer range -1 .. 0;
+
    procedure Report_Error
      (File    : in File_Reader.File_Type;
-      Message : in String);
+      Message : in String;
+      Offset  : in Line_Offset := 0);
    --  Report an error to standard error
 
    procedure Report_Error
@@ -217,6 +222,47 @@ procedure Style_Checker is
       procedure Check_Copyright;
 
       procedure Check_Space_Comment;
+
+      procedure Check_Comment_Dot_EOL;
+
+      ---------------------------
+      -- Check_Comment_Dot_EOL --
+      ---------------------------
+
+      procedure Check_Comment_Dot_EOL is
+      begin
+         if not Checker.Lang.Get_Comment_Dot_EOL
+           and then Checker.Lang.Comment /= ""
+         then
+            if Fixed.Index (Line, String'(Checker.Lang.Comment)) /= 0 then
+               --  This is a comment
+               Checker.Consecutive_Comment := Checker.Consecutive_Comment + 1;
+
+               if Line
+                 (Fixed.Index_Non_Blank (Line, Going => Backward)) = '.'
+               then
+                  Checker.Last_Comment_Dot_EOL := True;
+               else
+                  Checker.Last_Comment_Dot_EOL := False;
+               end if;
+
+            else
+               --  No more in a comment line
+
+               if Checker.Consecutive_Comment = 1
+                 and then Checker.Last_Comment_Dot_EOL
+               then
+                  Report_Error
+                    (Checker.File,
+                     "single line comment should not terminate with dot",
+                     Offset => -1);
+               end if;
+
+               Checker.Consecutive_Comment := 0;
+               Checker.Last_Comment_Dot_EOL := False;
+            end if;
+         end if;
+      end Check_Comment_Dot_EOL;
 
       ---------------------
       -- Check_Copyright --
@@ -394,6 +440,7 @@ procedure Style_Checker is
       Check_Header;
       Check_Copyright;
       Check_Space_Comment;
+      Check_Comment_Dot_EOL;
    end Check_Line;
 
    --------------------
@@ -416,9 +463,11 @@ procedure Style_Checker is
 
    procedure Report_Error
      (File    : in File_Reader.File_Type;
-      Message : in String)
+      Message : in String;
+      Offset  : in Line_Offset := 0)
    is
-      Line : constant String := Natural'Image (File_Reader.Line (File));
+      Line : constant String :=
+               Natural'Image (File_Reader.Line (File) + Offset);
    begin
       Error_Count := Error_Count + 1;
       if Error_Count <= Max_Error then
@@ -499,6 +548,8 @@ procedure Style_Checker is
       P ("   -cf         : if present a copyright line should match the"
          & "given pattern");
       P ("   -cF         : disable copyright pattern check");
+      P ("   -d          : check single comment line dot ending");
+      P ("   -D          : disable check for single comment line dot ending");
       P ("   -e DOS|UNIX : line ending style (UNIX default)");
       P ("   -E          : disable line ending check");
       P ("   -h N        : start with an header of N line (default N  20)");
@@ -531,7 +582,7 @@ begin
       loop
          case GNAT.Command_Line.Getopt
            ("abs lang: ign: e: E l? h? H "
-              & "L b B s S t T v c? C cp cy cP cY cf: cF sp: m: n:")
+              & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n:")
          is
             when ASCII.NUL =>
                exit;
@@ -542,6 +593,12 @@ begin
                else
                   raise Checks.Syntax_Error;
                end if;
+
+            when 'd' =>
+               Languages.Set_Comment_Dot_EOL (Lang, False);
+
+            when 'D' =>
+               Languages.Set_Comment_Dot_EOL (Lang, True);
 
             when 'e' =>
                Languages.Set_Line_Ending

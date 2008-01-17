@@ -1,0 +1,4 @@
+pck.ads:43: single line comment should not terminate with dot
+pck.ads:67: no trailing spaces allowed
+pck.ads:67: single line comment should not terminate with dot
+pck.ads:77: single line comment should not terminate with dot

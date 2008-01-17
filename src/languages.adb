@@ -93,6 +93,15 @@ package body Languages is
       return Get_From_Name ("unknown");
    end Get;
 
+   -------------------------
+   -- Get_Comment_Dot_EOL --
+   -------------------------
+
+   function Get_Comment_Dot_EOL (L : in Lang) return Boolean is
+   begin
+      return L.C.Comment_Dot_EOL;
+   end Get_Comment_Dot_EOL;
+
    ---------------------------
    -- Get_Copyright_Pattern --
    ---------------------------
@@ -168,6 +177,24 @@ package body Languages is
       Lang_Set (Index) :=  new Lang'Class'(L);
       Lang_Set (Index).Name := To_Unbounded_String (Name);
    end Register;
+
+   -------------------------
+   -- Set_Comment_Dot_EOL --
+   -------------------------
+
+   procedure Set_Comment_Dot_EOL
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Comment_Dot_EOL (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Comment_Dot_EOL := Mode;
+      end if;
+   end Set_Comment_Dot_EOL;
 
    ---------------------------
    -- Set_Copyright_Pattern --

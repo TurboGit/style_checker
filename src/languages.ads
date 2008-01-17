@@ -137,6 +137,14 @@ package Languages is
 
    function Get_Space_Comment (L : in Lang) return Natural;
 
+   --  Comments ending
+
+   procedure Set_Comment_Dot_EOL
+     (L    : in Lang_Access;
+      Mode : in Boolean);
+
+   function Get_Comment_Dot_EOL (L : in Lang) return Boolean;
+
    --  Style checker parameter
 
    procedure Add_Style_Checker_Parameter
