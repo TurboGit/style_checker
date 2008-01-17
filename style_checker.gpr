@@ -1,3 +1,23 @@
+------------------------------------------------------------------------------
+--                              Style Checker                               --
+--                                                                          --
+--                  Copyright (C) 2008, Pascal Obry                         --
+--                                                                          --
+--  This library is free software; you can redistribute it and/or modify    --
+--  it under the terms of the GNU General Public License as published by    --
+--  the Free Software Foundation; either version 2 of the License, or (at   --
+--  your option) any later version.                                         --
+--                                                                          --
+--  This library is distributed in the hope that it will be useful, but     --
+--  WITHOUT ANY WARRANTY; without even the implied warranty of              --
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       --
+--  General Public License for more details.                                --
+--                                                                          --
+--  You should have received a copy of the GNU General Public License       --
+--  along with this library; if not, write to the Free Software Foundation, --
+--  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          --
+--                                                                          --
+------------------------------------------------------------------------------
 
 project Style_Checker is
 
@@ -5,6 +25,10 @@ project Style_Checker is
    for Object_Dir use "obj";
    for Exec_Dir use ".";
    for Main use ("style_checker.adb");
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-m");
+   end Builder;
 
    package Ide is
       for Vcs_Kind use "Git";
@@ -15,7 +39,7 @@ project Style_Checker is
    end Binder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnat05", "-gnaty", "-O2");
+      for Default_Switches ("Ada") use ("-gnat05", "-gnaty", "-O2");
    end Compiler;
 
 end Style_Checker;
