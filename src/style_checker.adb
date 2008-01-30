@@ -534,6 +534,7 @@ procedure Style_Checker is
       P ("Style Checker " & Version.Simple);
       Text_IO.New_Line;
       P ("style_checker [-lang name] [options] file1 file2...");
+      P ("   -lang       : list all built-in supported languages");
       P ("   -lang NAME  : following options are for this specific language");
       P ("   -abs        : output absolute path name");
       P ("   -ign EXT    : ignore files having EXT has extension");
