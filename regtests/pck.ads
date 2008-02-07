@@ -27,7 +27,7 @@ package Pck is
    use Ada.Strings.Unbounded;
 
    Syntax_Error : exception;
-   --  Raised when a syntax error is found
+   --  Raised when a syntax error is found...
 
    Max_Parameters : constant := 30;
    --  Maximum number of parameters that can be specified for a style checker

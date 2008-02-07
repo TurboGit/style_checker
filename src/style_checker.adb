@@ -230,6 +230,7 @@ procedure Style_Checker is
       ---------------------------
 
       procedure Check_Comment_Dot_EOL is
+         Pos : Natural;
       begin
          if not Checker.Lang.Get_Comment_Dot_EOL
            and then Checker.Lang.Comment /= ""
@@ -238,8 +239,11 @@ procedure Style_Checker is
                --  This is a comment
                Checker.Consecutive_Comment := Checker.Consecutive_Comment + 1;
 
-               if Line
-                 (Fixed.Index_Non_Blank (Line, Going => Backward)) = '.'
+               Pos := Fixed.Index_Non_Blank (Line, Going => Backward);
+
+               if Line (Pos) = '.'
+                 and then Pos > Line'First + 1
+                 and then Line (Pos - 2 .. Pos - 1) /= ".."
                then
                   Checker.Last_Comment_Dot_EOL := True;
                else
