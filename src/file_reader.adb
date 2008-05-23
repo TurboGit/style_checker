@@ -58,7 +58,7 @@ package body File_Reader is
       Last   :    out Natural;
       Ending :    out Checks.Line_Ending_Style)
    is
-      C : Character := ASCII.Nul;
+      C : Character := ASCII.NUL;
    begin
       Last := Buffer'First - 1;
 
