@@ -551,7 +551,7 @@ procedure Style_Checker is
       P ("   -cy         : check for copyright year");
       P ("   -cY         : disbale check for copyright year (default)");
       P ("   -cf         : if present a copyright line should match the"
-         & "given pattern");
+         & " given pattern");
       P ("   -cF         : disable copyright pattern check");
       P ("   -d          : check single comment line dot ending");
       P ("   -D          : disable check for single comment line dot ending");
