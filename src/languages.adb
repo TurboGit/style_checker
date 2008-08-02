@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                 Copyright (C) 2006-2008, Pascal Obry                     --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -82,10 +82,18 @@ package body Languages is
    ---------
 
    function Get (Filename : in String) return Lang'Class is
-      Ext : constant String := Directories.Extension (Filename);
+      Ext   : aliased constant String := Directories.Extension (Filename);
+      Base  : aliased constant String := Directories.Base_Name (Filename);
+      Check : access constant String;
    begin
+      if Ext = "" then
+         Check := Base'Access;
+      else
+         Check := Ext'Access;
+      end if;
+
       for K in 1 .. Index loop
-         if Is_Extension (Lang_Set (K).all, Ext) then
+         if Is_Extension (Lang_Set (K).all, Check.all) then
             return Lang_Set (K).all;
          end if;
       end loop;

@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                 Copyright (C) 2006-2008, Pascal Obry                     --
+--                  Copyright (C) 2006-2008, Pascal Obry                    --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -19,15 +19,28 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Languages.Ada;
-with Languages.C;
-with Languages.Makefile;
-with Languages.Python;
-with Languages.Script;
-with Languages.Text;
-with Languages.Unknown;
-with Languages.XML;
+package body Languages.Makefile is
 
-package Supported_Languages is
+   Handler : Lang;
 
-end Supported_Languages;
+   -------------
+   -- Comment --
+   -------------
+
+   function Comment (L : in Lang) return String is
+   begin
+      return "#";
+   end Comment;
+
+   ------------------
+   -- Is_Extension --
+   ------------------
+
+   function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+   begin
+      return Ext = "make" or else Ext = "makefile";
+   end Is_Extension;
+
+begin
+   Register (Handler, "Makefile");
+end Languages.Makefile;

@@ -19,15 +19,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Languages.Ada;
-with Languages.C;
-with Languages.Makefile;
-with Languages.Python;
-with Languages.Script;
-with Languages.Text;
-with Languages.Unknown;
-with Languages.XML;
+package Languages.Makefile is
 
-package Supported_Languages is
+   type Lang is new Languages.Lang with null record;
 
-end Supported_Languages;
+   function Comment (L : in Lang) return String;
+
+   function Is_Extension (L : in Lang; Ext : in String) return Boolean;
+
+end Languages.Makefile;
