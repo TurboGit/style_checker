@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                  Copyright (C) 2006-2007, Pascal Obry                    --
+--                  Copyright (C) 2006-2008, Pascal Obry                    --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -765,6 +765,10 @@ begin
       Ignore_Set.Include ("so");
       Ignore_Set.Include ("o");
       Ignore_Set.Include ("obj");
+      Ignore_Set.Include ("tar");
+      Ignore_Set.Include ("gz");
+      Ignore_Set.Include ("bz2");
+      Ignore_Set.Include ("7z");
 
       loop
          declare
