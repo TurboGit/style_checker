@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                    Copyright (C) 2006-2008, Pascal Obry                  --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -58,7 +58,7 @@ package body File_Reader is
       Last   :    out Natural;
       Ending :    out Checks.Line_Ending_Style)
    is
-      C : Character := ASCII.Nul;
+      C : Character := ASCII.NUL;
    begin
       Last := Buffer'First - 1;
 
