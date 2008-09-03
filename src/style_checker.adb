@@ -549,7 +549,7 @@ procedure Style_Checker is
       P ("   -cp         : check copyright presence");
       P ("   -cP         : disable check for copyright presence (default)");
       P ("   -cy         : check for copyright year");
-      P ("   -cY         : disbale check for copyright year (default)");
+      P ("   -cY         : disable check for copyright year (default)");
       P ("   -cf         : if present a copyright line should match the"
          & " given pattern");
       P ("   -cF         : disable copyright pattern check");
