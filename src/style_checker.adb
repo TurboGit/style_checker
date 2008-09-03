@@ -583,6 +583,12 @@ begin
    then
       List_Languages;
 
+   elsif Ada.Command_Line.Argument_Count = 1
+     and then Ada.Command_Line.Argument (1) = "-h"
+   then
+      Usage;
+      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+
    else
       loop
          case GNAT.Command_Line.Getopt
