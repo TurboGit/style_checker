@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<!--  This file adds support for the style_checker utility to GPS. -->
+
+<style_checker>
+   <action name="Style_Checker" output="none" category="Style_Checker">
+      <description>Check source code style.</description>
+
+      <shell>MDI.save_all</shell>
+      <shell>Locations.remove_category "Style Checker"</shell>
+      <shell>Project %p</shell>
+      <shell>Project.get_tool_switches_as_string %1 Style_Checker</shell>
+      <external output="">style_checker %1 "%F"</external>
+      <on-failure>
+        <shell>Locations.parse """%1 """ "Style Checker"</shell>
+      </on-failure>
+   </action>
+
+   <submenu>
+      <Title>Edit</Title>
+      <menu action="Style_Checker" before="Unit Testing" >
+         <title>Check for style errors</title>
+      </menu>
+   </submenu>
+
+   <tool name="Style_Checker" package="Style_Checker" index="Style_Checker" >
+      <language>Ada</language>
+      <switches lines="3">
+         <title line="1" >Simple switches</title>
+         <title line="2" >Line ending</title>
+         <title line="3" >Copyright</title>
+
+	 <!-- section 1 -->
+         <check label="Allow trailing spaces"
+		switch="-T" line="1"/>
+
+         <check label="Allow duplicate blank lines"
+		switch="-B" line="1"/>
+
+         <check label="Allow single space after comment characters"
+		switch="-C" line="1"/>
+
+         <check label="Forbid single comment line ending with dot"
+		switch="-d" line="1"/>
+
+         <check label="Disable Ada syntax check"
+		switch="-S" line="1"/>
+
+	 <spin label="Maximum line length" min="50" max="120" default="79"
+	       switch="-l"/>
+
+         <check label="Do not check for header size"
+		switch="-H" line="1"/>
+
+	 <spin label="Header size" min="0" max="40" default="20"
+	       switch="-h"/>
+
+         <dependency master-page="Style_Checker" slave-page="Style_Checker"
+                     master-switch="-H"
+                     slave-switch="-h"
+                     master-status="on" slave-status="20" />
+
+         <dependency master-page="Style_Checker" slave-page="Style_Checker"
+                     master-switch="-h"
+                     slave-switch="-H"
+                     master-status="21" slave-status="off" />
+
+         <dependency master-page="Style_Checker" slave-page="Style_Checker"
+                     master-switch="-h"
+                     slave-switch="-H"
+                     master-status="19" slave-status="off" />
+
+	 <!-- section 2 -->
+         <radio line="2">
+           <radio-entry label="Do not check line ending" switch="-E" />
+           <radio-entry label="DOS line ending" switch="-eDOS" />
+	   <radio-entry label="UNIX line ending" switch="-eUNIX" />
+         </radio>
+
+	 <!-- section 3 -->
+         <check label="Check for copyright presence"
+		switch="-cp" line="3"/>
+
+         <check label="Check for copyright year"
+		switch="-cy" line="3"/>
+
+         <field label="Copyright pattern" switch="-cf"
+	        separator=" " line="3"/>
+      </switches>
+   </tool>
+</style_checker>
