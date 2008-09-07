@@ -554,7 +554,8 @@ procedure Style_Checker is
          & " given pattern");
       P ("   -cF         : disable copyright pattern check");
       P ("   -d          : check single comment line dot ending");
-      P ("   -D          : disable check for single comment line dot ending");
+      P ("   -D          : disable check for single comment line dot"
+         & " ending (default)");
       P ("   -e DOS|UNIX : line ending style (UNIX default)");
       P ("   -E          : disable line ending check");
       P ("   -h N        : start with an header of N line (default N  20)");
