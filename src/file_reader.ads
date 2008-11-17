@@ -20,7 +20,6 @@
 ------------------------------------------------------------------------------
 
 with Ada.Strings.Unbounded;
-with Ada.Directories;
 with Ada.Streams.Stream_IO;
 
 with Checks;

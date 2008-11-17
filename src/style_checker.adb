@@ -516,7 +516,7 @@ procedure Style_Checker is
    -------------
 
    function Unquote (Str : in String) return String is
-      S : String := Fixed.Trim (Str, Strings.Both);
+      S : constant String := Fixed.Trim (Str, Strings.Both);
    begin
       if (S (S'First) = ''' and then S (S'Last) = ''')
         or else (S (S'First) = '"' and then S (S'Last) = '"')

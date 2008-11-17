@@ -19,6 +19,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+pragma Warnings (Off);
+
 with Languages.Ada;
 with Languages.C;
 with Languages.Makefile;

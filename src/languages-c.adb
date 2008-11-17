@@ -28,6 +28,7 @@ package body Languages.C is
    -------------
 
    function Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
    begin
       return "//";
    end Comment;
@@ -37,6 +38,7 @@ package body Languages.C is
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L);
    begin
       return Ext = "c" or else Ext = "cpp" or else Ext = "h";
    end Is_Extension;

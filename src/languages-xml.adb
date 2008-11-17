@@ -28,6 +28,7 @@ package body Languages.XML is
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L);
    begin
       return Ext = "xml" or else Ext = "html"
         or else Ext = "txml" or else Ext = "thtml";

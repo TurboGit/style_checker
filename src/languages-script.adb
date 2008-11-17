@@ -28,6 +28,7 @@ package body Languages.Script is
    -------------
 
    function Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
    begin
       return "#";
    end Comment;
@@ -37,6 +38,7 @@ package body Languages.Script is
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L);
    begin
       return Ext = "sh" or else Ext = "csh" or else Ext = "zsh";
    end Is_Extension;

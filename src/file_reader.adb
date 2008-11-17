@@ -19,6 +19,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Directories;
 with Ada.Unchecked_Conversion;
 
 package body File_Reader is
@@ -60,6 +61,7 @@ package body File_Reader is
    is
       C : Character := ASCII.NUL;
    begin
+      Ending := Checks.Any;
       Last := Buffer'First - 1;
 
       while Last < Buffer'Last

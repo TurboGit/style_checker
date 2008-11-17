@@ -19,7 +19,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Command_Line;
 with Ada.Text_IO;
 
 with GNAT.OS_Lib;
@@ -39,6 +38,7 @@ package body Languages.Ada is
    -------------
 
    function Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
    begin
       return "--";
    end Comment;
@@ -48,6 +48,7 @@ package body Languages.Ada is
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L);
    begin
       return Ext = "ads" or else Ext = "adb" or else Ext = "ada";
    end Is_Extension;
@@ -65,11 +66,10 @@ package body Languages.Ada is
       Syntax  : aliased String := "-gnats";
       File    : aliased String := Filename;
 
-      Args    : OS_Lib.Argument_List :=
-                  (Compile'Unchecked_Access,
-                   Syntax'Unchecked_Access) &
-                  L.Get_Style_Checker_Parameters &
-                  (1 => File'Unchecked_Access);
+      Args    : constant OS_Lib.Argument_List :=
+                  (Compile'Unchecked_Access, Syntax'Unchecked_Access)
+                  & L.Get_Style_Checker_Parameters
+                  & (1 => File'Unchecked_Access);
       Success : Boolean := True;
    begin
       if GCC = null then

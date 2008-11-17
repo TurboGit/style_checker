@@ -28,6 +28,7 @@ package body Languages.Text is
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L);
    begin
       return Ext = "txt" or else Ext = "";
    end Is_Extension;

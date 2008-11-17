@@ -21,13 +21,11 @@
 
 with Ada.Characters.Handling;
 with Ada.Directories;
-with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 package body Languages is
 
    use Ada;
-   use Ada.Strings.Unbounded;
    use Ada.Characters.Handling;
 
    Lang_Set : array (1 .. 50) of Lang_Access;
@@ -63,19 +61,10 @@ package body Languages is
    -------------
 
    function Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
    begin
       return "";
    end Comment;
-
-   ----------------------
-   -- Run_Syntax_Check --
-   ----------------------
-
-   function Run_Syntax_Check
-     (L : in Lang; Filename : in String) return Boolean is
-   begin
-      return True;
-   end Run_Syntax_Check;
 
    ---------
    -- Get --
@@ -119,6 +108,33 @@ package body Languages is
       return To_String (L.C.Copyright_Pattern);
    end Get_Copyright_Pattern;
 
+   ---------------------------
+   -- Get_Copyright_Present --
+   ---------------------------
+
+   function Get_Copyright_Present (L : in Lang) return Boolean is
+   begin
+      return L.C.Copyright_Present;
+   end Get_Copyright_Present;
+
+   ------------------------
+   -- Get_Copyright_Year --
+   ------------------------
+
+   function Get_Copyright_Year (L : in Lang) return Boolean is
+   begin
+      return L.C.Copyright_Year;
+   end Get_Copyright_Year;
+
+   ------------------------------
+   -- Get_Duplicate_Blank_Line --
+   ------------------------------
+
+   function Get_Duplicate_Blank_Line (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Duplicate_Blank_Line;
+   end Get_Duplicate_Blank_Line;
+
    -------------------
    -- Get_From_Name --
    -------------------
@@ -140,11 +156,77 @@ package body Languages is
       return Get_From_Name (Name).all;
    end Get_From_Name;
 
+   ---------------------
+   -- Get_Header_Size --
+   ---------------------
+
+   function Get_Header_Size (L : in Lang) return Natural is
+   begin
+      return  L.C.Header_Size;
+   end Get_Header_Size;
+
+   ---------------------
+   -- Get_Line_Ending --
+   ---------------------
+
+   function Get_Line_Ending
+     (L : in Lang) return Checks.Line_Ending_Style is
+   begin
+      return L.C.Line_Ending;
+   end Get_Line_Ending;
+
+   -------------------------
+   -- Get_Line_Length_Max --
+   -------------------------
+
+   function Get_Line_Length_Max (L : in Lang) return Positive is
+   begin
+      return L.C.Line_Length_Max;
+   end Get_Line_Length_Max;
+
+   -----------------------
+   -- Get_Space_Comment --
+   -----------------------
+
+   function Get_Space_Comment (L : in Lang) return Natural is
+   begin
+      return L.C.Space_Comment;
+   end Get_Space_Comment;
+
+   ----------------------------------
+   -- Get_Style_Checker_Parameters --
+   ----------------------------------
+
+   function Get_Style_Checker_Parameters
+     (L : in Lang) return GNAT.OS_Lib.Argument_List is
+   begin
+      return L.C.Checker_Params (1 .. L.C.Index);
+   end Get_Style_Checker_Parameters;
+
+   ----------------------
+   -- Get_Syntax_Check --
+   ----------------------
+
+   function Get_Syntax_Check (L : in Lang) return Boolean is
+   begin
+      return L.C.Check_Syntax;
+   end Get_Syntax_Check;
+
+   -------------------------
+   -- Get_Trailing_Spaces --
+   -------------------------
+
+   function Get_Trailing_Spaces (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Trailing_Spaces;
+   end Get_Trailing_Spaces;
+
    ------------------
    -- Is_Extension --
    ------------------
 
    function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+      pragma Unreferenced (L, Ext);
    begin
       return False;
    end Is_Extension;
@@ -186,6 +268,17 @@ package body Languages is
       Lang_Set (Index).Name := To_Unbounded_String (Name);
    end Register;
 
+   ----------------------
+   -- Run_Syntax_Check --
+   ----------------------
+
+   function Run_Syntax_Check
+     (L : in Lang; Filename : in String) return Boolean is
+      pragma Unreferenced (L, Filename);
+   begin
+      return True;
+   end Run_Syntax_Check;
+
    -------------------------
    -- Set_Comment_Dot_EOL --
    -------------------------
@@ -222,6 +315,42 @@ package body Languages is
       end if;
    end Set_Copyright_Pattern;
 
+   ---------------------------
+   -- Set_Copyright_Present --
+   ---------------------------
+
+   procedure Set_Copyright_Present
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Copyright_Present (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Copyright_Present := Mode;
+      end if;
+   end Set_Copyright_Present;
+
+   ------------------------
+   -- Set_Copyright_Year --
+   ------------------------
+
+   procedure Set_Copyright_Year
+     (L    : in Lang_Access;
+      Mode : in Boolean) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Copyright_Year (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Copyright_Year := Mode;
+      end if;
+   end Set_Copyright_Year;
+
    ------------------------------
    -- Set_Duplicate_Blank_Line --
    ------------------------------
@@ -239,6 +368,24 @@ package body Languages is
          L.C.Duplicate_Blank_Line := Mode;
       end if;
    end Set_Duplicate_Blank_Line;
+
+   ---------------------
+   -- Set_Header_Size --
+   ---------------------
+
+   procedure Set_Header_Size
+     (L    : in Lang_Access;
+      Size : in Natural) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Header_Size (Lang_Set (K), Size);
+         end loop;
+
+      else
+         L.C.Header_Size := Size;
+      end if;
+   end Set_Header_Size;
 
    ---------------------
    -- Set_Line_Ending --
@@ -293,61 +440,6 @@ package body Languages is
          L.C.Space_Comment := Number;
       end if;
    end Set_Space_Comment;
-
-   ---------------------
-   -- Set_Header_Size --
-   ---------------------
-
-   procedure Set_Header_Size
-     (L    : in Lang_Access;
-      Size : in Natural) is
-   begin
-      if L = null then
-         for K in 1 .. Index loop
-            Set_Header_Size (Lang_Set (K), Size);
-         end loop;
-
-      else
-         L.C.Header_Size := Size;
-      end if;
-   end Set_Header_Size;
-
-   ---------------------------
-   -- Set_Copyright_Present --
-   ---------------------------
-
-   procedure Set_Copyright_Present
-     (L    : in Lang_Access;
-      Mode : in Boolean) is
-   begin
-      if L = null then
-         for K in 1 .. Index loop
-            Set_Copyright_Present (Lang_Set (K), Mode);
-         end loop;
-
-      else
-         L.C.Copyright_Present := Mode;
-      end if;
-   end Set_Copyright_Present;
-
-   ------------------------
-   -- Set_Copyright_Year --
-   ------------------------
-
-   procedure Set_Copyright_Year
-     (L    : in Lang_Access;
-      Mode : in Boolean) is
-   begin
-      if L = null then
-         for K in 1 .. Index loop
-            Set_Copyright_Year (Lang_Set (K), Mode);
-         end loop;
-
-      else
-         L.C.Copyright_Year := Mode;
-      end if;
-   end Set_Copyright_Year;
-
    ----------------------
    -- Set_Syntax_Check --
    ----------------------
@@ -383,97 +475,5 @@ package body Languages is
          L.C.Trailing_Spaces := Mode;
       end if;
    end Set_Trailing_Spaces;
-
-   ---------------------------
-   -- Get_Copyright_Present --
-   ---------------------------
-
-   function Get_Copyright_Present (L : in Lang) return Boolean is
-   begin
-      return L.C.Copyright_Present;
-   end Get_Copyright_Present;
-
-   ------------------------
-   -- Get_Copyright_Year --
-   ------------------------
-
-   function Get_Copyright_Year (L : in Lang) return Boolean is
-   begin
-      return L.C.Copyright_Year;
-   end Get_Copyright_Year;
-
-   ------------------------------
-   -- Get_Duplicate_Blank_Line --
-   ------------------------------
-
-   function Get_Duplicate_Blank_Line (L : in Lang) return Checks.Mode is
-   begin
-      return L.C.Duplicate_Blank_Line;
-   end Get_Duplicate_Blank_Line;
-
-   ---------------------
-   -- Get_Header_Size --
-   ---------------------
-
-   function Get_Header_Size (L : in Lang) return Natural is
-   begin
-      return  L.C.Header_Size;
-   end Get_Header_Size;
-
-   ---------------------
-   -- Get_Line_Ending --
-   ---------------------
-
-   function Get_Line_Ending
-     (L : in Lang) return Checks.Line_Ending_Style is
-   begin
-      return L.C.Line_Ending;
-   end Get_Line_Ending;
-
-   -------------------------
-   -- Get_Line_Length_Max --
-   -------------------------
-
-   function Get_Line_Length_Max (L : in Lang) return Positive is
-   begin
-      return L.C.Line_Length_Max;
-   end Get_Line_Length_Max;
-
-   -----------------------
-   -- Get_Space_Comment --
-   -----------------------
-
-   function Get_Space_Comment (L : in Lang) return Natural is
-   begin
-      return L.C.Space_Comment;
-   end Get_Space_Comment;
-
-   ----------------------
-   -- Get_Syntax_Check --
-   ----------------------
-
-   function Get_Syntax_Check (L : in Lang) return Boolean is
-   begin
-      return L.C.Check_Syntax;
-   end Get_Syntax_Check;
-
-   -------------------------
-   -- Get_Trailing_Spaces --
-   -------------------------
-
-   function Get_Trailing_Spaces (L : in Lang) return Checks.Mode is
-   begin
-      return L.C.Trailing_Spaces;
-   end Get_Trailing_Spaces;
-
-   ----------------------------------
-   -- Get_Style_Checker_Parameters --
-   ----------------------------------
-
-   function Get_Style_Checker_Parameters
-     (L : in Lang) return GNAT.OS_Lib.Argument_List is
-   begin
-      return L.C.Checker_Params (1 .. L.C.Index);
-   end Get_Style_Checker_Parameters;
 
 end Languages;
