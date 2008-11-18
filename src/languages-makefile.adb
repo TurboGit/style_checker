@@ -27,7 +27,7 @@ package body Languages.Makefile is
    -- Comment --
    -------------
 
-   function Comment (L : in Lang) return String is
+   overriding function Comment (L : in Lang) return String is
       pragma Unreferenced (L);
    begin
       return "#";
@@ -37,7 +37,8 @@ package body Languages.Makefile is
    -- Is_Extension --
    ------------------
 
-   function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+   overriding function Is_Extension
+     (L : in Lang; Ext : in String) return Boolean is
       pragma Unreferenced (L);
    begin
       return Ext = "make" or else Ext = "makefile";

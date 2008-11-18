@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                 Copyright (C) 2006-2008, Pascal Obry                     --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -37,7 +37,7 @@ package body Languages.Ada is
    -- Comment --
    -------------
 
-   function Comment (L : in Lang) return String is
+   overriding function Comment (L : in Lang) return String is
       pragma Unreferenced (L);
    begin
       return "--";
@@ -47,7 +47,8 @@ package body Languages.Ada is
    -- Is_Extension --
    ------------------
 
-   function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+   overriding function Is_Extension
+     (L : in Lang; Ext : in String) return Boolean is
       pragma Unreferenced (L);
    begin
       return Ext = "ads" or else Ext = "adb" or else Ext = "ada";
@@ -57,7 +58,7 @@ package body Languages.Ada is
    -- Run_Syntax_Check --
    ----------------------
 
-   function Run_Syntax_Check
+   overriding function Run_Syntax_Check
      (L : in Lang; Filename : in String) return Boolean
    is
       use type OS_Lib.Argument_List;

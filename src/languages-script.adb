@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                   Copyright (C) 2006-2008, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -27,7 +27,7 @@ package body Languages.Script is
    -- Comment --
    -------------
 
-   function Comment (L : in Lang) return String is
+   overriding function Comment (L : in Lang) return String is
       pragma Unreferenced (L);
    begin
       return "#";
@@ -37,7 +37,8 @@ package body Languages.Script is
    -- Is_Extension --
    ------------------
 
-   function Is_Extension (L : in Lang; Ext : in String) return Boolean is
+   overriding function Is_Extension
+     (L : in Lang; Ext : in String) return Boolean is
       pragma Unreferenced (L);
    begin
       return Ext = "sh" or else Ext = "csh" or else Ext = "zsh";

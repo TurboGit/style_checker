@@ -23,8 +23,9 @@ package Languages.Makefile is
 
    type Lang is new Languages.Lang with null record;
 
-   function Comment (L : in Lang) return String;
+   overriding function Comment (L : in Lang) return String;
 
-   function Is_Extension (L : in Lang; Ext : in String) return Boolean;
+   overriding function Is_Extension
+     (L : in Lang; Ext : in String) return Boolean;
 
 end Languages.Makefile;

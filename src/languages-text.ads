@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                   Copyright (C) 2006-2008, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -23,6 +23,7 @@ package Languages.Text is
 
    type Lang is new Languages.Lang with null record;
 
-   function Is_Extension (L : in Lang; Ext : in String) return Boolean;
+   overriding function Is_Extension
+     (L : in Lang; Ext : in String) return Boolean;
 
 end Languages.Text;
