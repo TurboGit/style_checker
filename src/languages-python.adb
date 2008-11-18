@@ -45,5 +45,8 @@ package body Languages.Python is
    end Is_Extension;
 
 begin
+   --  Default space comment is 1
+   Handler.C.Space_Comment := 1;
+
    Register (Handler, "Python");
 end Languages.Python;
