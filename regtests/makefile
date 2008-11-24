@@ -13,7 +13,7 @@ run_tests:
 	-../style_checker -HBCELT -lang Ada -cp main.adb > out7.res 2>&1
 	-../style_checker -H endings.txt > out8.res 2>&1
 	-../style_checker -H noendings.txt > out9.res 2>&1
-	-../style_checker hello.e > out10.res 2>&1
+	-../style_checker -H hello.e > out10.res 2>&1
 	-../style_checker -ign e hello.e >> out10.res 2>&1
 	-../style_checker -m 2 hello.e > out11.res 2>&1
 	-../style_checker header1.adb header2.adb header3.adb > out12.res 2>&1
@@ -22,6 +22,8 @@ run_tests:
 		copyright.ads > out13.res 2>&1
 	-../style_checker -H script.sh > out14.res 2>&1
 	-../style_checker -d -cY pck.ads > out15.res 2>&1
+	-../style_checker -d -cY main.c > out16.res 2>&1
+	-../style_checker -d -cY code.c > out17.res 2>&1
 
 check_results:
 	echo "### regressions follows"
@@ -41,6 +43,8 @@ check_results:
 	-diff -wc out13.out out13.res || echo $$? >> out_status.res
 	-diff -wc out14.out out14.res || echo $$? >> out_status.res
 	-diff -wc out15.out out15.res || echo $$? >> out_status.res
+	-diff -wc out16.out out16.res || echo $$? >> out_status.res
+	-diff -wc out17.out out17.res || echo $$? >> out_status.res
 	test ! -e out_status.res
 
 clean:

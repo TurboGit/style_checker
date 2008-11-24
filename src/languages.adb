@@ -66,6 +66,16 @@ package body Languages is
       return "";
    end Comment;
 
+   ---------------------------
+   -- End_Multiline_Comment --
+   ---------------------------
+
+   function End_Multiline_Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
+   begin
+      return "";
+   end End_Multiline_Comment;
+
    ---------
    -- Get --
    ---------
@@ -475,5 +485,15 @@ package body Languages is
          L.C.Trailing_Spaces := Mode;
       end if;
    end Set_Trailing_Spaces;
+
+   -----------------------------
+   -- Start_Multiline_Comment --
+   -----------------------------
+
+   function Start_Multiline_Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
+   begin
+      return "";
+   end Start_Multiline_Comment;
 
 end Languages;

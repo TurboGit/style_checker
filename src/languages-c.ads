@@ -25,6 +25,10 @@ package Languages.C is
 
    overriding function Comment (L : in Lang) return String;
 
+   overriding function Start_Multiline_Comment (L : in Lang) return String;
+
+   overriding function End_Multiline_Comment (L : in Lang) return String;
+
    overriding function Is_Extension
      (L : in Lang; Ext : in String) return Boolean;
 

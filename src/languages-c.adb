@@ -33,16 +33,37 @@ package body Languages.C is
       return "//";
    end Comment;
 
+   ---------------------------
+   -- End_Multiline_Comment --
+   ---------------------------
+
+   overriding function End_Multiline_Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
+   begin
+      return "*/";
+   end End_Multiline_Comment;
+
    ------------------
    -- Is_Extension --
    ------------------
 
    overriding function Is_Extension
-     (L : in Lang; Ext : in String) return Boolean is
+     (L : in Lang; Ext : in String) return Boolean
+   is
       pragma Unreferenced (L);
    begin
       return Ext = "c" or else Ext = "cpp" or else Ext = "h";
    end Is_Extension;
+
+   -----------------------------
+   -- Start_Multiline_Comment --
+   -----------------------------
+
+   overriding function Start_Multiline_Comment (L : in Lang) return String is
+      pragma Unreferenced (L);
+   begin
+      return "/*";
+   end Start_Multiline_Comment;
 
 begin
    Register (Handler, "C");

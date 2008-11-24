@@ -90,6 +90,7 @@ procedure Style_Checker is
       Copyright_Year       : Boolean := False;
       Header_Size          : Natural := 0;
       In_Header            : Boolean := True;
+      Multiline_Comment    : Boolean := False;
       Consecutive_Comment  : Natural := 0;
       Last_Comment_Dot_EOL : Boolean := False;
    end record;
@@ -168,7 +169,7 @@ procedure Style_Checker is
             Report_Error
               (Filename, "file header should have at least"
                  & Positive'Image (Checker.Lang.Get_Header_Size)
-                 & " lines");
+                 & " lines, found" & Integer'Image (Checker.Header_Size));
          end if;
       end if;
 
@@ -368,15 +369,52 @@ procedure Style_Checker is
       ------------------
 
       procedure Check_Header is
-         C : constant String := Checker.Lang.Comment;
+         C     : constant String := Checker.Lang.Comment;
+         CS    : constant String := Checker.Lang.Start_Multiline_Comment;
+         CE    : constant String := Checker.Lang.End_Multiline_Comment;
+         Is_C  : constant Boolean :=
+                   C /= ""
+                   and then Line'Length >= C'Length
+                   and then Line
+                     (Line'First .. Line'First + C'Length - 1) = C;
+         Is_CS : constant Boolean :=
+                   CS /= ""
+                   and then File_Reader.Line (Checker.File) = 1
+                   and then Line'Length >= CS'Length
+                   and then Line
+                     (Line'First .. Line'First + CS'Length - 1) = CS;
+         Is_CE : constant Boolean :=
+                   CE /= ""
+                   and then Line'Length >= CE'Length
+                   and then Line
+                     (Line'Last - CE'Length + 1 .. Line'Last) = CE;
       begin
-         if Checker.In_Header
-           and then Line'Length >= C'Length
-           and then Line (Line'First .. Line'First + C'Length - 1) = C
-         then
-            Checker.Header_Size := Checker.Header_Size + 1;
+         --  Check that we are starting with a multi-line comment
+
+         if File_Reader.Line (Checker.File) = 1 then
+            if Is_C or else Is_CS then
+               Checker.Header_Size := Checker.Header_Size + 1;
+
+               if Is_CS then
+                  Checker.Multiline_Comment := True;
+               end if;
+
+            else
+               Checker.In_Header := False;
+            end if;
+
          else
-            Checker.In_Header := False;
+            if Checker.In_Header
+              and then
+                (Is_C or else (Checker.Multiline_Comment and then not Is_CE))
+            then
+               Checker.Header_Size := Checker.Header_Size + 1;
+            else
+               if Is_CE then
+                  Checker.Header_Size := Checker.Header_Size + 1;
+               end if;
+               Checker.In_Header := False;
+            end if;
          end if;
       end Check_Header;
 

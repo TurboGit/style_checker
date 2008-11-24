@@ -40,6 +40,12 @@ package Languages is
    function Comment (L : in Lang) return String;
    --  Returns the comment characters used for the given language
 
+   function Start_Multiline_Comment (L : in Lang) return String;
+   --  Returns the characters use to start a multi-line comment
+
+   function End_Multiline_Comment (L : in Lang) return String;
+   --  Returns the characters use to end a multi-line comment
+
    function Run_Syntax_Check
      (L : in Lang; Filename : in String) return Boolean;
    --  Run the syntax checker for the given languages, returns true if no

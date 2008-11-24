@@ -2,6 +2,6 @@ error1.txt:4: line too long
 error1.txt:7: line too long
 error1.txt:7: no trailing spaces allowed
 error1.txt:9: duplicate blank line
-error1.txt:1: file header should have at least 20 lines
+error1.txt:1: missing file header (must start on first line)
 demo.adb:3: 2 spaces after --
 demo.adb:5: 2 spaces after --
