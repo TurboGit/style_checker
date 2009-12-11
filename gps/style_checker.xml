@@ -7,7 +7,9 @@
 
       <shell>MDI.save_all</shell>
       <shell>Locations.remove_category "Style Checker"</shell>
-      <shell>Project %p</shell>
+<!--      <shell>Project %p</shell> -->
+<!-- Use the above to have a per-project configuration -->
+      <shell>Project.root</shell>
       <shell>Project.get_tool_switches_as_string %1 Style_Checker</shell>
       <external output="">style_checker %1 "%F"</external>
       <on-failure>
