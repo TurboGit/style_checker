@@ -11,7 +11,7 @@
       <shell>Project.get_tool_switches_as_string %1 Style_Checker</shell>
       <external output="">style_checker %1 "%F"</external>
       <on-failure>
-        <shell>Locations.parse """%1 """ "Style Checker"</shell>
+        <shell>Locations.parse "%1 " "Style Checker"</shell>
       </on-failure>
    </action>
 
