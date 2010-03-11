@@ -1,0 +1,8 @@
+/*
+essai
+*/
+
+int
+main (void)
+{
+}
