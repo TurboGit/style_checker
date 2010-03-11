@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                   Copyright (C) 2006-2010, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -161,6 +161,14 @@ package Languages is
    function Get_Style_Checker_Parameters
      (L : in Lang) return GNAT.OS_Lib.Argument_List;
    --  Returns the arguments for the style checker
+
+   --  Tabulations
+
+   procedure Set_Tabulation
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode);
+
+   function Get_Tabulation (L : in Lang) return Checks.Mode;
 
 private
 

@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                    Copyright (C) 2006, Pascal Obry                       --
+--                   Copyright (C) 2006-2010, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -50,6 +50,9 @@ package Checks is
 
       Trailing_Spaces      : Mode := Rejected;
       --  Reject any line with trailing blanks (space or HT)
+
+      Tabulation           : Mode := Rejected;
+      --  Reject any line with tabulations
 
       Header_Size          : Natural := 20;
       --  Minimum header size

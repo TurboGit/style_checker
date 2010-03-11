@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                 Copyright (C) 2006-2008, Pascal Obry                     --
+--                   Copyright (C) 2006-2010, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -221,6 +221,15 @@ package body Languages is
    begin
       return L.C.Check_Syntax;
    end Get_Syntax_Check;
+
+   --------------------
+   -- Get_Tabulation --
+   --------------------
+
+   function Get_Tabulation (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Tabulation;
+   end Get_Tabulation;
 
    -------------------------
    -- Get_Trailing_Spaces --
@@ -468,6 +477,24 @@ package body Languages is
          L.C.Check_Syntax := Mode;
       end if;
    end Set_Syntax_Check;
+
+   --------------------
+   -- Set_Tabulation --
+   --------------------
+
+   procedure Set_Tabulation
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Tabulation (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Tabulation := Mode;
+      end if;
+   end Set_Tabulation;
 
    -------------------------
    -- Set_Trailing_Spaces --

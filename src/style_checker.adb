@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                  Copyright (C) 2006-2008, Pascal Obry                    --
+--                  Copyright (C) 2006-2010, Pascal Obry                    --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -225,6 +225,8 @@ procedure Style_Checker is
       procedure Check_Space_Comment;
 
       procedure Check_Comment_Dot_EOL;
+
+      procedure Check_Tab;
 
       ---------------------------
       -- Check_Comment_Dot_EOL --
@@ -459,6 +461,19 @@ procedure Style_Checker is
          end if;
       end Check_Space_Comment;
 
+      ---------------
+      -- Check_Tab --
+      ---------------
+
+      procedure Check_Tab is
+      begin
+         if Checker.Lang.Get_Tabulation = Checks.Rejected
+           and then Strings.Fixed.Index (Line, String'(1 => ASCII.HT)) /= 0
+         then
+            Report_Error (Checker.File, "no tabulations allowed");
+         end if;
+      end Check_Tab;
+
       ---------------------------
       -- Check_Trailing_Spaces --
       ---------------------------
@@ -483,6 +498,7 @@ procedure Style_Checker is
       Check_Copyright;
       Check_Space_Comment;
       Check_Comment_Dot_EOL;
+      Check_Tab;
    end Check_Line;
 
    --------------------
@@ -578,6 +594,8 @@ procedure Style_Checker is
       P ("style_checker [-lang name] [options] file1 file2...");
       P ("   -lang       : list all built-in supported languages");
       P ("   -lang NAME  : following options are for this specific language");
+      P ("   -a          : check for tabulations (default)");
+      P ("   -A          : disable tabulations check");
       P ("   -abs        : output absolute path name");
       P ("   -ign EXT    : ignore files having EXT has extension");
       P ("   -b          : no duplicate blank lines (default)");
@@ -631,7 +649,7 @@ begin
    else
       loop
          case GNAT.Command_Line.Getopt
-           ("abs lang: ign: e: E l? h? H "
+           ("a A abs lang: ign: e: E l? h? H "
               & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n:")
          is
             when ASCII.NUL =>
@@ -640,9 +658,16 @@ begin
             when 'a' =>
                if GNAT.Command_Line.Full_Switch = "abs" then
                   Absolute_Pathname := True;
+
+               elsif GNAT.Command_Line.Full_Switch = "a" then
+                  Languages.Set_Tabulation (Lang, Checks.Rejected);
+
                else
                   raise Checks.Syntax_Error;
                end if;
+
+            when 'A' =>
+               Languages.Set_Tabulation (Lang, Checks.Accepted);
 
             when 'd' =>
                Languages.Set_Comment_Dot_EOL (Lang, False);

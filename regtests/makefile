@@ -30,6 +30,11 @@ run_tests:
 	-../style_checker -d -cY pck.ads > out15.res 2>&1
 	-../style_checker -d -cY main.c > out16.res 2>&1
 	-../style_checker -d -cY code.c > out17.res 2>&1
+	-../style_checker -H withtab.adb > out18.res 2>&1
+	-echo a >> out18.res
+	-../style_checker -Ha withtab.adb >> out18.res 2>&1
+	-echo A >> out18.res
+	-../style_checker -HA withtab.adb >> out18.res 2>&1
 
 check_results:
 	echo "### regressions follows"
@@ -51,6 +56,7 @@ check_results:
 	-diff -wc out15.out out15.res || echo $$? >> out_status.res
 	-diff -wc out16.out out16.res || echo $$? >> out_status.res
 	-diff -wc out17.out out17.res || echo $$? >> out_status.res
+	-diff -wc out18.out out18.res || echo $$? >> out_status.res
 	test ! -e out_status.res
 
 clean:
