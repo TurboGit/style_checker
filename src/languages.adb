@@ -450,6 +450,7 @@ package body Languages is
          L.C.Space_Comment := Number;
       end if;
    end Set_Space_Comment;
+
    ----------------------
    -- Set_Syntax_Check --
    ----------------------
