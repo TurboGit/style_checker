@@ -1,2 +1,3 @@
 header1.adb:1: missing file header (must start on first line)
 header2.adb:1: file header should have at least 20 lines, found 2
+header3.adb:1: missing year 2010 in copyright
