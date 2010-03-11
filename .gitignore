@@ -3,5 +3,6 @@
 *~
 obj
 regtests/*.res
+regtests/*.tmp
 src/version.ads
 style_checker
