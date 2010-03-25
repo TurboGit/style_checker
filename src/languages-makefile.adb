@@ -46,4 +46,5 @@ package body Languages.Makefile is
 
 begin
    Register (Handler, "Makefile");
+   Set_Tabulation (Get_From_Name ("Makefile"), Checks.Accepted);
 end Languages.Makefile;
