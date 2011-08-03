@@ -82,6 +82,10 @@ package Checks is
 
       Operator_EOL         : Mode := Accepted;
       --  Check for operators at end of line
+
+      Then_Layout          : Mode := Accepted;
+      --  Check for Then layout (Ada), should be on the line with the if or the
+      --  first word on its line.
    end record;
 
 end Checks;

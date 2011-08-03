@@ -240,6 +240,15 @@ package body Languages is
       return L.C.Tabulation;
    end Get_Tabulation;
 
+   ---------------------
+   -- Get_Then_Layout --
+   ---------------------
+
+   function Get_Then_Layout (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Then_Layout;
+   end Get_Then_Layout;
+
    -------------------------
    -- Get_Trailing_Spaces --
    -------------------------
@@ -522,6 +531,25 @@ package body Languages is
          L.C.Tabulation := Mode;
       end if;
    end Set_Tabulation;
+
+   ---------------------
+   -- Set_Then_Layout --
+   ---------------------
+
+   procedure Set_Then_Layout
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode)
+   is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Then_Layout (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Then_Layout := Mode;
+      end if;
+   end Set_Then_Layout;
 
    -------------------------
    -- Set_Trailing_Spaces --

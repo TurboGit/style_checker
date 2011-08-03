@@ -37,6 +37,7 @@ run_tests:
 	-../style_checker -HA withtab.adb >> out18.res 2>&1
 	-../style_checker -C makefile > out19.res 2>&1
 	-../style_checker -Ho operator.adb > out20.res 2>&1
+	-../style_checker -Hi thenlayout.adb > out21.res 2>&1
 
 check_results:
 	echo "### regressions follows"
@@ -61,6 +62,7 @@ check_results:
 	-diff -wc out18.out out18.res || echo $$? >> out_status.res
 	-diff -wc out19.out out19.res || echo $$? >> out_status.res
 	-diff -wc out20.out out20.res || echo $$? >> out_status.res
+	-diff -wc out21.out out21.res || echo $$? >> out_status.res
 	test ! -e out_status.res
 
 clean:

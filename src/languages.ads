@@ -178,6 +178,14 @@ package Languages is
 
    function Get_Operator_EOL (L : in Lang) return Checks.Mode;
 
+   --  Then layout
+
+   procedure Set_Then_Layout
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode);
+
+   function Get_Then_Layout (L : in Lang) return Checks.Mode;
+
 private
 
    type Lang is tagged record

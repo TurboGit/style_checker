@@ -39,6 +39,7 @@
 --
 
 with Ada.Calendar;
+with Ada.Characters.Handling;
 with Ada.Command_Line;
 with Ada.Containers.Indefinite_Hashed_Sets;
 with Ada.Directories;
@@ -229,6 +230,8 @@ procedure Style_Checker is
       procedure Check_Tab;
 
       procedure Check_Operator_EOL;
+
+      procedure Check_Then_Layout;
 
       ---------------------------
       -- Check_Comment_Dot_EOL --
@@ -545,6 +548,83 @@ procedure Style_Checker is
          end if;
       end Check_Tab;
 
+      -----------------------
+      -- Check_Then_Layout --
+      -----------------------
+
+      procedure Check_Then_Layout is
+
+         function Is_Word (First, Last : Natural) return Boolean;
+         --  Returns True if Str is a word and not a substring
+
+         -------------
+         -- Is_Word --
+         -------------
+
+         function Is_Word (First, Last : Natural) return Boolean is
+            use Ada.Characters.Handling;
+         begin
+            if (First > Line'First
+                and then Is_Alphanumeric (Line (First - 1)))
+              or else
+                (Last < Line'Last and then Is_Alphanumeric (Line (Last + 1)))
+            then
+               return False;
+            else
+               return True;
+            end if;
+         end Is_Word;
+
+         I                : constant Natural := Fixed.Index_Non_Blank (Line);
+         L                : Natural := Line'Length;
+         If_Pos, Then_Pos : Natural;
+      begin
+         if Checker.Lang.Get_Then_Layout = Checks.Rejected and then I /= 0 then
+            if Checker.Lang.Comment /= ""
+              and then Fixed.Index (Line, String'(Checker.Lang.Comment)) /= 0
+            then
+               L := Fixed.Index (Line, String'(Checker.Lang.Comment));
+            end if;
+
+            If_Pos := Fixed.Index (Line (I .. L), "if");
+            Then_Pos :=
+              Fixed.Index (Line (I .. L), "then", Going => Strings.Backward);
+
+            if If_Pos /= 0 and then not Is_Word (If_Pos, If_Pos + 1) then
+               --  This is not an if keyword
+               If_Pos := 0;
+            end if;
+
+            --  If no If found, check for an elsif
+
+            if If_Pos = 0 then
+               If_Pos := Fixed.Index (Line (I .. L), "elsif");
+
+               if If_Pos /= 0 and then not Is_Word (If_Pos, If_Pos + 4) then
+                  --  This is not an if keyword
+                  If_Pos := 0;
+               end if;
+            end if;
+
+            if Then_Pos /= 0
+              and then
+                (not Is_Word (Then_Pos, Then_Pos + 3)
+                 or else (Then_Pos - 4 >= 1 and then Then_Pos + 3 <= L
+                          and then
+                            Line (Then_Pos - 4 .. Then_Pos + 3) = "and then"))
+            then
+               --  This is not a then keyword
+               Then_Pos := 0;
+            end if;
+
+            if Then_Pos /= 0 and then If_Pos = 0 and then Then_Pos /= I then
+               --  then keyword not on the line with the if and it is not the
+               --  first word on this line.
+               Report_Error (Checker.File, "'then' incorrect layout");
+            end if;
+         end if;
+      end Check_Then_Layout;
+
       ---------------------------
       -- Check_Trailing_Spaces --
       ---------------------------
@@ -571,6 +651,7 @@ procedure Style_Checker is
       Check_Comment_Dot_EOL;
       Check_Tab;
       Check_Operator_EOL;
+      Check_Then_Layout;
    end Check_Line;
 
    --------------------
@@ -688,6 +769,7 @@ procedure Style_Checker is
       P ("   -E          : disable line ending check");
       P ("   -h N        : start with an header of N line (default N  20)");
       P ("   -H          : disable header check");
+      P ("   -i          : enable if/then layout");
       P ("   -l N        : line length <= N (default 79)");
       P ("   -L          : disable line length check");
       P ("   -m N        : output only the first N errors");
@@ -722,7 +804,7 @@ begin
    else
       loop
          case GNAT.Command_Line.Getopt
-           ("a A abs lang: ign: e: E l? h? H "
+           ("a A abs lang: ign: e: E l? h? H i "
               & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n: o")
          is
             when ASCII.NUL =>
@@ -762,6 +844,10 @@ begin
                begin
                   if Full = "ign" then
                      Ignore_Set.Include (GNAT.Command_Line.Parameter);
+
+                  elsif Full = "i" then
+                     Languages.Set_Then_Layout (Lang, Checks.Rejected);
+
                   else
                      raise Checks.Syntax_Error;
                   end if;
