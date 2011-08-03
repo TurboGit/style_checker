@@ -1,0 +1,4 @@
+operator.adb:6: 'and then' operator at end of line
+operator.adb:9: 'or else' operator at end of line
+operator.adb:12: 'or' operator at end of line
+operator.adb:15: 'and' operator at end of line

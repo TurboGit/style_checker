@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                   Copyright (C) 2006-2010, Pascal Obry                   --
+--                   Copyright (C) 2006-2011, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -169,6 +169,14 @@ package Languages is
       Mode : in Checks.Mode);
 
    function Get_Tabulation (L : in Lang) return Checks.Mode;
+
+   --  Operator end-of-line
+
+   procedure Set_Operator_EOL
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode);
+
+   function Get_Operator_EOL (L : in Lang) return Checks.Mode;
 
 private
 

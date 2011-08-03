@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                  Copyright (C) 2006-2010, Pascal Obry                    --
+--                  Copyright (C) 2006-2011, Pascal Obry                    --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -228,6 +228,8 @@ procedure Style_Checker is
 
       procedure Check_Tab;
 
+      procedure Check_Operator_EOL;
+
       ---------------------------
       -- Check_Comment_Dot_EOL --
       ---------------------------
@@ -431,6 +433,75 @@ procedure Style_Checker is
          end if;
       end Check_Length_Max;
 
+      ------------------------
+      -- Check_Operator_EOL --
+      ------------------------
+
+      procedure Check_Operator_EOL is
+         I : constant Natural := Fixed.Index_Non_Blank (Line);
+         L : constant Natural := Line'Length - I;
+
+         function Get_Operator return String;
+         --  Returns EOL operaror of empty line if not found
+
+         ------------------
+         -- Get_Operator --
+         ------------------
+
+         function Get_Operator return String is
+         begin
+            if L > 1
+              and then (Line (Line'Last) = '&'
+                        or else Line (Line'Last) = '+'
+                        or else Line (Line'Last) = '-'
+                        or else Line (Line'Last) = '*'
+                        or else Line (Line'Last) = '/')
+            then
+               return String'(1 => Line (Line'Last));
+
+            elsif L > 2 and then Line (Line'Last - 2 .. Line'Last) = " or" then
+               return  Line (Line'Last - 1 .. Line'Last);
+
+            elsif L > 3
+              and then (Line (Line'Last - 3 .. Line'Last) = " not"
+                        or else Line (Line'Last - 3 .. Line'Last) = " and"
+                        or else Line (Line'Last - 3 .. Line'Last) = " xor"
+                        or else Line (Line'Last - 3 .. Line'Last) = " mod")
+            then
+               return Line (Line'Last - 2 .. Line'Last);
+
+            elsif L > 7
+              and then Line (Line'Last - 7 .. Line'Last) = " or else"
+            then
+               return Line (Line'Last - 6 .. Line'Last);
+
+            elsif L > 8
+              and then Line (Line'Last - 8 .. Line'Last) = " and then"
+            then
+               return Line (Line'Last - 7 .. Line'Last);
+
+            else
+               return "";
+            end if;
+         end Get_Operator;
+
+      begin
+         if Checker.Lang.Get_Operator_EOL = Checks.Rejected
+           and then (Checker.Lang.Comment = ""
+                       or else
+                       Fixed.Index (Line, String'(Checker.Lang.Comment)) = 0)
+         then
+            declare
+               Op : constant String := Get_Operator;
+            begin
+               if Op /= "" then
+                  Report_Error
+                    (Checker.File, ''' & Op & "' operator at end of line");
+               end if;
+            end;
+         end if;
+      end Check_Operator_EOL;
+
       -------------------------
       -- Check_Space_Comment --
       -------------------------
@@ -499,6 +570,7 @@ procedure Style_Checker is
       Check_Space_Comment;
       Check_Comment_Dot_EOL;
       Check_Tab;
+      Check_Operator_EOL;
    end Check_Line;
 
    --------------------
@@ -620,6 +692,7 @@ procedure Style_Checker is
       P ("   -L          : disable line length check");
       P ("   -m N        : output only the first N errors");
       P ("   -n NAME     : filename to report in error message");
+      P ("   -o          : enable operator end of line");
       P ("   -s          : syntax check (default)");
       P ("   -sp PARAM   : additional parameter for the style checker");
       P ("   -S          : disable syntax check");
@@ -650,7 +723,7 @@ begin
       loop
          case GNAT.Command_Line.Getopt
            ("a A abs lang: ign: e: E l? h? H "
-              & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n:")
+              & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n: o")
          is
             when ASCII.NUL =>
                exit;
@@ -744,6 +817,9 @@ begin
 
             when 'B' =>
                Languages.Set_Duplicate_Blank_Line (Lang, Checks.Accepted);
+
+            when 'o' =>
+               Languages.Set_Operator_EOL (Lang, Checks.Rejected);
 
             when 't' =>
                Languages.Set_Trailing_Spaces (Lang, Checks.Rejected);

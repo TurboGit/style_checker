@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                   Copyright (C) 2006-2010, Pascal Obry                   --
+--                   Copyright (C) 2006-2011, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -193,6 +193,15 @@ package body Languages is
    begin
       return L.C.Line_Length_Max;
    end Get_Line_Length_Max;
+
+   ----------------------
+   -- Get_Operator_EOL --
+   ----------------------
+
+   function Get_Operator_EOL (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.Operator_EOL;
+   end Get_Operator_EOL;
 
    -----------------------
    -- Get_Space_Comment --
@@ -441,6 +450,24 @@ package body Languages is
          L.C.Line_Length_Max := Length;
       end if;
    end Set_Line_Length_Max;
+
+   ----------------------
+   -- Set_Operator_EOL --
+   ----------------------
+
+   procedure Set_Operator_EOL
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_Operator_EOL (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.Operator_EOL := Mode;
+      end if;
+   end Set_Operator_EOL;
 
    -----------------------
    -- Set_Space_Comment --

@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                   Copyright (C) 2006-2010, Pascal Obry                   --
+--                   Copyright (C) 2006-2011, Pascal Obry                   --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -79,6 +79,9 @@ package Checks is
       --  Single line comment can terminate with a dot
 
       Index                : Natural := 0;
+
+      Operator_EOL         : Mode := Accepted;
+      --  Check for operators at end of line
    end record;
 
 end Checks;
