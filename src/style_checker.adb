@@ -282,6 +282,7 @@ procedure Style_Checker is
 
       procedure Check_Copyright is
          use Text_IO;
+         C_Year   : constant Boolean := Fixed.Index (Line, Current_Year) /= 0;
          Co_Start : Natural := 0;
          Cp_Start : Natural := Fixed.Index (Line, " Copyright");
       begin
@@ -312,9 +313,12 @@ procedure Style_Checker is
             end if;
          end if;
 
-         --  Check that the copyright year follow the given regexp
+         --  Check that the copyright year follow the given regexp only if we
+         --  have found the current copyright year. This is important as
+         --  previous copyright on a source could be with another format.
 
          if Cp_Start /= 0
+           and then C_Year
            and then Checker.Lang.Get_Copyright_Pattern /= ""
          then
             declare

@@ -23,9 +23,10 @@ run_tests:
 	-../style_checker -A -m 2 hello.e > out11.res 2>&1
 	-../style_checker header1.adb header2.adb header3.adb > out12.tmp 2>&1
 	sed 's,$(YEAR),2010,g' out12.tmp > out12.res
+	sed 's,2005,$(YEAR),g' copyright.ads > copyright2.ads
 	-../style_checker -S -cY -H \
 		-cf'Copyright \(C\) 2\d\d\d-2\d\d\d, (Pascal Obry|Qwerty)' \
-		copyright.ads > out13.res 2>&1
+		copyright2.ads > out13.res 2>&1
 	-../style_checker -H script.sh > out14.res 2>&1
 	-../style_checker -d -cY pck.ads > out15.res 2>&1
 	-../style_checker -d -cY main.c > out16.res 2>&1
