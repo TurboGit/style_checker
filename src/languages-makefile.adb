@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                              Style Checker                               --
 --                                                                          --
---                  Copyright (C) 2006-2008, Pascal Obry                    --
+--                  Copyright (C) 2006-2012, Pascal Obry                    --
 --                                                                          --
 --  This library is free software; you can redistribute it and/or modify    --
 --  it under the terms of the GNU General Public License as published by    --
@@ -41,7 +41,7 @@ package body Languages.Makefile is
      (L : in Lang; Ext : in String) return Boolean is
       pragma Unreferenced (L);
    begin
-      return Ext = "make" or else Ext = "makefile";
+      return Ext = "make" or else Ext = "makefile" or else Ext = "Makefile";
    end Is_Extension;
 
 begin
