@@ -1,0 +1,2 @@
+withuse2.adb:4: a use following a with clause, need empty line
+withuse2.adb:5: a with following a use clause, need empty line

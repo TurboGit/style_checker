@@ -86,6 +86,10 @@ package Checks is
       Then_Layout          : Mode := Accepted;
       --  Check for Then layout (Ada), should be on the line with the if or the
       --  first word on its line.
+
+      With_Use             : Mode := Accepted;
+      --  Should we reject unsorted with/use clauses and block of with/use
+      --  without separator line.
    end record;
 
 end Checks;

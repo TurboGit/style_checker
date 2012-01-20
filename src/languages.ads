@@ -186,6 +186,14 @@ package Languages is
 
    function Get_Then_Layout (L : in Lang) return Checks.Mode;
 
+   --  With/Use clauses
+
+   procedure Set_With_Use
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode);
+
+   function Get_With_Use (L : in Lang) return Checks.Mode;
+
 private
 
    type Lang is tagged record

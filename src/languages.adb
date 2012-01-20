@@ -259,6 +259,15 @@ package body Languages is
    end Get_Trailing_Spaces;
 
    ------------------
+   -- Get_With_Use --
+   ------------------
+
+   function Get_With_Use (L : in Lang) return Checks.Mode is
+   begin
+      return L.C.With_Use;
+   end Get_With_Use;
+
+   ------------------
    -- Is_Extension --
    ------------------
 
@@ -568,6 +577,24 @@ package body Languages is
          L.C.Trailing_Spaces := Mode;
       end if;
    end Set_Trailing_Spaces;
+
+   ------------------
+   -- Set_With_Use --
+   ------------------
+
+   procedure Set_With_Use
+     (L    : in Lang_Access;
+      Mode : in Checks.Mode) is
+   begin
+      if L = null then
+         for K in 1 .. Index loop
+            Set_With_Use (Lang_Set (K), Mode);
+         end loop;
+
+      else
+         L.C.With_Use := Mode;
+      end if;
+   end Set_With_Use;
 
    -----------------------------
    -- Start_Multiline_Comment --

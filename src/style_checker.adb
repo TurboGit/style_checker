@@ -46,6 +46,7 @@ with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
+with Ada.Strings.Maps;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
@@ -94,6 +95,7 @@ procedure Style_Checker is
       Multiline_Comment    : Boolean := False;
       Consecutive_Comment  : Natural := 0;
       Last_Comment_Dot_EOL : Boolean := False;
+      Last_With_Use_Clause : Unbounded_String;
    end record;
 
    procedure Check (Filename : in String);
@@ -232,6 +234,10 @@ procedure Style_Checker is
       procedure Check_Operator_EOL;
 
       procedure Check_Then_Layout;
+
+      procedure Check_With_Use_Clauses;
+
+      First_Non_Blank : constant Natural := Fixed.Index_Non_Blank (Line);
 
       ---------------------------
       -- Check_Comment_Dot_EOL --
@@ -445,7 +451,7 @@ procedure Style_Checker is
       ------------------------
 
       procedure Check_Operator_EOL is
-         I : constant Natural := Fixed.Index_Non_Blank (Line);
+         I : constant Natural := First_Non_Blank;
          L : constant Natural := Line'Length - I;
 
          function Get_Operator return String;
@@ -579,7 +585,7 @@ procedure Style_Checker is
             end if;
          end Is_Word;
 
-         I                : constant Natural := Fixed.Index_Non_Blank (Line);
+         I                : constant Natural := First_Non_Blank;
          L                : Natural := Line'Length;
          If_Pos, Then_Pos : Natural;
       begin
@@ -644,6 +650,127 @@ procedure Style_Checker is
          end if;
       end Check_Trailing_Spaces;
 
+      ----------------------------
+      -- Check_With_Use_Clauses --
+      ----------------------------
+
+      procedure Check_With_Use_Clauses is
+         use Characters.Handling;
+
+         function Is_With_Clause return Boolean;
+         pragma Inline (Is_With_Clause);
+
+         --------------------
+         -- Is_With_Clause --
+         --------------------
+
+         function Is_With_Clause return Boolean is
+            Sep  : constant Maps.Character_Set := Maps.To_Set (" ;");
+            F, L : Natural;
+         begin
+            if First_Non_Blank + 4 < Line'Last
+              and then Line (First_Non_Blank .. First_Non_Blank + 4) = "with "
+              and then (First_Non_Blank = Line'First
+                          or else Line (First_Non_Blank - 1) = ' ')
+            then
+               --  Check now that the next word corresponds to a with clause
+
+               F := First_Non_Blank + 5;
+               L := Fixed.Index (Line, Sep, From => F);
+
+               if L /= 0
+                 and then
+                 (Line (F .. L - 1) = "procedure"
+                    or else Line (F .. L - 1) = "function"
+                    or else Line (F .. L - 1) = "package"
+                    or else Line (F .. L - 1) = "null"
+                    or else Line (F .. L - 1) = "record"
+                    or else Line (F .. L - 1) = "private"
+                    or else Line (F .. L - 1) = "limited"
+                    --  No quote as in: raise Excep with "message";
+                    or else Fixed.Index (Line (F .. L), """") /= 0)
+               then
+                  return False;
+               else
+                  return True;
+               end if;
+
+            else
+               return False;
+            end if;
+         end Is_With_Clause;
+
+         Last : constant String := To_String (Checker.Last_With_Use_Clause);
+         Sep  : Natural := 0;
+      begin
+         if Checker.Lang.Get_With_Use = Checks.Rejected then
+            if Is_With_Clause then
+               Sep := Fixed.Index (Line, ";");
+
+               --  Do not take ; into account
+
+               if Sep /= 0 then
+                  Sep := Sep - 1;
+               end if;
+
+               --  This is a with clause, check start of line
+
+               if First_Non_Blank /= Line'First then
+                  Report_Error (Checker.File, "with bad indentation");
+
+               elsif Last'Length > 4
+                 and then Last (Last'First .. Last'First + 3) = "use "
+               then
+                  Report_Error
+                    (Checker.File,
+                     "a with following a use clause, need empty line");
+
+               elsif Last > To_Lower (Line (First_Non_Blank .. Sep)) then
+                  Report_Error
+                    (Checker.File,
+                     "with clauses must be in alphabetical order");
+               end if;
+
+            elsif First_Non_Blank + 3 < Line'Last
+              and then Line (First_Non_Blank .. First_Non_Blank + 3) = "use "
+              and then (First_Non_Blank = Line'First
+                        or else Line (First_Non_Blank - 1) = ' ')
+            then
+               Sep := Fixed.Index (Line, ";");
+
+               --  Do not take ; into account
+
+               if Sep /= 0 then
+                  Sep := Sep - 1;
+               end if;
+
+               if Last'Length > 5
+                 and then Last (Last'First .. Last'First + 4) = "with "
+               then
+                  Report_Error
+                    (Checker.File,
+                     "a use following a with clause, need empty line");
+
+               elsif Last > To_Lower (Line (First_Non_Blank .. Sep)) then
+                  Report_Error
+                    (Checker.File,
+                     "use clauses must be in alphabetical order");
+               end if;
+
+            else
+               --  This is not a with/use clause, clear context
+
+               Checker.Last_With_Use_Clause := Null_Unbounded_String;
+            end if;
+
+            if Sep /= 0 then
+               Checker.Last_With_Use_Clause :=
+                 To_Unbounded_String
+                   (To_Lower (Line (First_Non_Blank .. Sep)));
+            end if;
+         end if;
+      end Check_With_Use_Clauses;
+
    begin
       Check_Ending;
       Check_Length_Max;
@@ -656,6 +783,7 @@ procedure Style_Checker is
       Check_Tab;
       Check_Operator_EOL;
       Check_Then_Layout;
+      Check_With_Use_Clauses;
    end Check_Line;
 
    --------------------
@@ -785,6 +913,9 @@ procedure Style_Checker is
       P ("   -t          : check for trailing spaces (default)");
       P ("   -T          : disable trailing spaces check");
       P ("   -v          : display version");
+      P ("   -w          : check with/use clauses sorting/block");
+      P ("   -W          : "
+         & "disable check with/use clauses sorting/block (default)");
       Text_IO.New_Line;
    end Usage;
 
@@ -808,8 +939,8 @@ begin
    else
       loop
          case GNAT.Command_Line.Getopt
-           ("a A abs lang: ign: e: E l? h? H i "
-              & "L b B s S t T v c? C cp cy cP cY cf: cF d D sp: m: n: o")
+           ("a A abs lang: ign: e: E l? h? H i L b B s S t T v w W "
+              & "c? C cp cy cP cY cf: cF d D sp: m: n: o")
          is
             when ASCII.NUL =>
                exit;
@@ -983,6 +1114,12 @@ begin
             when 'v' =>
                Text_IO.Put_Line ("Style Checker " & Version.Complete);
                exit;
+
+            when 'w' =>
+               Languages.Set_With_Use (Lang, Checks.Rejected);
+
+            when 'W' =>
+               Languages.Set_With_Use (Lang, Checks.Accepted);
 
             when others =>
                raise Checks.Syntax_Error;
