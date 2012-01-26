@@ -678,18 +678,11 @@ procedure Style_Checker is
                F := First_Non_Blank + 5;
                L := Fixed.Index (Line, Sep, From => F);
 
-               if L /= 0
-                 and then
-                 (Line (F .. L - 1) = "procedure"
-                    or else Line (F .. L - 1) = "function"
-                    or else Line (F .. L - 1) = "package"
-                    or else Line (F .. L - 1) = "null"
-                    or else Line (F .. L - 1) = "record"
-                    or else Line (F .. L - 1) = "private"
-                    or else Line (F .. L - 1) = "limited"
-                    --  No quote as in: raise Excep with "message";
-                    or else Fixed.Index (Line (F .. L), """") /= 0)
-               then
+               --  A separator is found, the first one is not ';' let's assume
+               --  that this is not a with clause as no spaces are allowed
+               --  for the unit name (even separating children units).
+
+               if L /= 0 and then Line (L) /= ';' then
                   return False;
                else
                   return True;
