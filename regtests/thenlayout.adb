@@ -21,4 +21,15 @@ begin
    elsif Gh = 9 then
       null;
    end if;
+
+   if Gh = 12
+     and then Gh = "then"
+   then
+      null;
+   end if;
+
+   if Gh = 12
+     and then Gh = "then" then
+      null;
+   end if;
 end ThenLayout;

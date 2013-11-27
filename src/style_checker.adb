@@ -586,6 +586,7 @@ procedure Style_Checker is
          end Is_Word;
 
          I                : constant Natural := First_Non_Blank;
+         K                : Natural;
          L                : Natural := Line'Length;
          If_Pos, Then_Pos : Natural;
       begin
@@ -597,8 +598,20 @@ procedure Style_Checker is
             end if;
 
             If_Pos := Fixed.Index (Line (I .. L), "if");
-            Then_Pos :=
-              Fixed.Index (Line (I .. L), "then", Going => Strings.Backward);
+
+            K := L;
+
+            loop
+               Then_Pos :=
+                 Fixed.Index
+                   (Line (I .. K), "then", Going => Strings.Backward);
+               exit when Then_Pos = 0
+                 or else Fixed.Count
+                   (Line (Then_Pos .. K), String'(1 => '"')) mod 2 = 0;
+               --  We exit if then is not found or if found that it is not in a
+               --  string.
+               K := Then_Pos;
+            end loop;
 
             if If_Pos /= 0 and then not Is_Word (If_Pos, If_Pos + 1) then
                --  This is not an if keyword
